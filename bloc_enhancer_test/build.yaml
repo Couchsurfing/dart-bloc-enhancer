@@ -1,0 +1,7 @@
+targets:
+    $default:
+        builders:
+            bloc_enhancer_gen:
+                enabled: true
+                options:
+                    auto_enhance: true

@@ -1,0 +1,5 @@
+dependency_overrides:
+    bloc_enhancer:
+        path: ../bloc_enhancer
+    bloc_enhancer_gen:
+        path: ../bloc_enhancer_gen

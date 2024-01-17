@@ -1,0 +1,87 @@
+import 'dart:async' show FutureOr;
+
+import 'package:analyzer/dart/element/element.dart';
+import 'package:bloc_enhancer_gen/gen/settings.dart';
+import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
+import 'package:bloc_enhancer_gen/src/models/state_element.dart';
+import 'package:bloc_enhancer_gen/src/visitors/bloc_visitor.dart';
+import 'package:bloc_enhancer_gen/src/writers/write_file.dart';
+import 'package:build/build.dart';
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
+import 'package:source_gen/source_gen.dart' hide TypeChecker;
+
+final class BlocEnhancerGenerator extends Generator {
+  BlocEnhancerGenerator(this.settings);
+
+  final Settings settings;
+
+  @override
+  FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
+    final visitor = BlocVisitor(settings);
+    library.element.visitChildren(visitor);
+
+    final allClassElements = library.allElements.whereType<ClassElement>();
+
+    for (final bloc in visitor.blocs) {
+      final eventAndState = {bloc.event.name, bloc.state.name};
+      final ignore = {bloc.bloc.name, ...eventAndState};
+
+      for (final clazz in allClassElements) {
+        if (ignore.contains(clazz.name)) {
+          continue;
+        }
+
+        // get super types
+        final superTypes = {...clazz.allSupertypes.map((e) => e.element.name)};
+        if (superTypes.contains(bloc.event.name)) {
+          bool canAdd = true;
+          for (final pattern in settings.avoidEvents) {
+            if (RegExp(pattern).hasMatch(clazz.name)) {
+              canAdd = false;
+              break;
+            }
+          }
+
+          if (canAdd) bloc.addEvent(clazz);
+        } else if (superTypes.contains(bloc.state.name)) {
+          bool canAdd = true;
+
+          if (!enhanceChecker.hasAnnotationOfExact(clazz)) {
+            for (final pattern in settings.avoidStates) {
+              if (RegExp(pattern).hasMatch(clazz.name)) {
+                canAdd = false;
+                break;
+              }
+            }
+          }
+
+          bool createFactory = settings.createStateFactory;
+
+          if (bloc.state.createFactory) {
+            createFactory = true;
+          } else if (stateFactoryChecker.hasAnnotationOf(clazz,
+              throwOnUnresolved: false)) {
+            createFactory = true;
+          }
+
+          if (canAdd)
+            bloc.addState(
+              StateElement(
+                element: clazz,
+                createFactory: createFactory,
+              ),
+            );
+        }
+      }
+    }
+
+    final emitter = DartEmitter(useNullSafetySyntax: true);
+
+    final generated = writeFile(visitor.blocs);
+
+    final output = generated.map((e) => e.accept(emitter)).join('\n');
+
+    return DartFormatter().format(output);
+  }
+}

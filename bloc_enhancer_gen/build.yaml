@@ -1,0 +1,9 @@
+builders:
+    bloc_enhancer_gen:
+        target: 'bloc_enhancer_gen'
+        import: 'package:bloc_enhancer_gen/bloc_enhancer_gen.dart'
+        builder_factories: ['blocEnhancerGenerator']
+        build_extensions: { '.dart': ['.bloc_enhancer.g.part'] }
+        auto_apply: dependents
+        build_to: cache
+        applies_builders: ['source_gen|combining_builder']

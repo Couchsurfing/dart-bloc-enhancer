@@ -1,0 +1,17 @@
+setup:
+    - dart pub get --precompile
+
+pub:
+    get: dart pub run very_good_cli:very_good packages get --recursive
+
+build_runner:
+    build: dart pub run build_runner build --delete-conflicting-outputs
+    watch: dart pub run build_runner watch --delete-conflicting-outputs
+
+br:
+    b: $build_runner:build
+    w: $build_runner:watch
+
+test:
+    - cd _core && dart run derry gen
+    - cd bloc_enhancer_test && dart run derry test

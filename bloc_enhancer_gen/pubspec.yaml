@@ -7,7 +7,10 @@ environment:
 
 dependencies:
     analyzer: '>=5.0.0 <7.0.0'
-    bloc_enhancer: '>=0.1.0 <1.0.0'
+    bloc_enhancer:
+        git:
+            url: https://github.com/Couchsurfing/dart-bloc-enhancer
+            path: bloc_enhancer
     build: ^2.4.1
     change_case: ^2.0.1
     code_builder: ^4.9.0

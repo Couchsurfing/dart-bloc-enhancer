@@ -47,7 +47,7 @@ packages:
       path: "../bloc_enhancer"
       relative: true
     source: path
-    version: "0.0.0"
+    version: "0.1.0"
   bloc_enhancer_gen:
     dependency: "direct dev"
     description:

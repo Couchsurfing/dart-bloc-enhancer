@@ -1,6 +1,6 @@
 name: bloc_enhancer
 description: An annotation package simplifying Bloc event and state classes, enhancing code readability and reducing naming conflicts.
-versionL: 0.1.0
+version: 0.1.0
 
 environment:
     sdk: '>=3.0.0 <4.0.0'

@@ -168,3 +168,7 @@ targets:
 ```
 
 _`generate_for.include` & `generate_for.exclude` are not bound to this package. They are part of the `build.yaml` format. You can read more [here](https://github.com/dart-lang/build/blob/master/docs/build_yaml_format.md)_
+
+## License
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+This software is released under the Apache 2.0 license. https://www.apache.org/licenses/LICENSE-2.0

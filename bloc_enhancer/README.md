@@ -11,3 +11,7 @@
 -   **Type Checks and Guards:** Simplified bloc state type checks and guards, allowing developers to check states more intuitively and retrieve states with ease.
 
 Read more about how to use `bloc_enhancer` in [`bloc_enhancer_gen`](https://pub.dev/packages/bloc_enhancer_gen).
+
+## License
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+This software is released under the Apache 2.0 license. https://www.apache.org/licenses/LICENSE-2.0

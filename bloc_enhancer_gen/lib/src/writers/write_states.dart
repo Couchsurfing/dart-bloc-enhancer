@@ -78,25 +78,7 @@ Class _writeCreatorClass(BlocElement element) {
     (b) => b
       ..name = '_\$${element.state.name}Creator'
       ..constructors.add(
-        Constructor(
-          (b) => b
-            ..constant = true
-            ..requiredParameters.add(
-              Parameter(
-                (b) => b
-                  ..name = '_state'
-                  ..toThis = true,
-              ),
-            ),
-        ),
-      )
-      ..fields.add(
-        Field(
-          (b) => b
-            ..name = '_state'
-            ..type = refer(element.state.name)
-            ..modifier = FieldModifier.final$,
-        ),
+        Constructor((b) => b..constant = true),
       )
       ..methods.addAll(element.states
           .where((e) => e.createFactory)

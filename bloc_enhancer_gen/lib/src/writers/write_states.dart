@@ -24,12 +24,10 @@ List<Spec> writeStates(List<BlocElement> blocs) {
 
   final redirects = blocs.where((e) => e.shouldCreateFactory);
   final creatorClasses = redirects.map(_writeCreatorClass).toList();
-  final creatorExtension = redirects.map(_writeCreatorExtension).toList();
 
   return [
     ...extensions,
     ...creatorClasses,
-    ...creatorExtension,
   ];
 }
 

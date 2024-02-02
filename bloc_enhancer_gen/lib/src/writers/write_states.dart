@@ -74,9 +74,15 @@ Method _writeAsStateMethod(StateElement state) {
 }
 
 Class _writeCreatorClass(BlocElement element) {
+  final docs = '''
+  /// Creates a new instance of [${element.state.name}] with the given parameters
+  ///
+  /// Intended to be used for **_TESTING_** purposes only.''';
+
   return Class(
     (b) => b
       ..name = '_\$${element.state.name}Creator'
+      ..docs.add(docs)
       ..constructors.add(
         Constructor((b) => b..constant = true),
       )
@@ -84,34 +90,6 @@ Class _writeCreatorClass(BlocElement element) {
           .where((e) => e.createFactory)
           .map(_writeCreatorMethod)
           .expand((e) => e)),
-  );
-}
-
-Extension _writeCreatorExtension(BlocElement element) {
-  final docs = '''
-  /// Creates a new instance of [${element.state.name}] with the given parameters
-  ///
-  /// Intended to be used for **_TESTING_** purposes only.''';
-  return Extension(
-    (b) => b
-      ..name = '_\$${element.state.name}CreatorX'
-      ..on = refer(element.state.name)
-      ..methods.add(
-        Method(
-          (b) => b
-            ..name = '_\$Creator'
-            ..static = true
-            ..returns = refer('_\$${element.state.name}Creator')
-            ..type = MethodType.getter
-            ..lambda = true
-            ..docs.add(docs)
-            ..body = refer('_\$${element.state.name}Creator').newInstance(
-              [
-                refer('this'),
-              ],
-            ).code,
-        ),
-      ),
   );
 }
 

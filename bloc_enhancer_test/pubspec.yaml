@@ -14,11 +14,3 @@ dev_dependencies:
     bloc_enhancer_gen:
     lints: ^3.0.0
     test: ^1.24.9
-    derry: ^1.5.0
-
-scripts:
-    test:
-        - $build
-        - dart test .
-    build: dart run build_runner build --delete-conflicting-outputs
-    watch: dart run build_runner watch --delete-conflicting-outputs

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 import 'package:bloc_enhancer_gen/bloc_enhancer_gen.dart';
-import 'package:bloc_enhancer_gen/gen/settings.dart';
+import 'package:bloc_enhancer_gen/models/settings.dart';
 import 'package:generator_test/generator_test.dart';
 import 'package:test/scaffolding.dart';
 

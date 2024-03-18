@@ -1,3 +1,14 @@
+targets:
+    $default:
+        builders:
+            json_serializable:
+                enabled: true
+                generate_for:
+                    - 'lib/models/*.dart'
+                options:
+                    any_map: true
+                    field_rename: snake
+
 builders:
     bloc_enhancer_gen:
         target: 'bloc_enhancer_gen'

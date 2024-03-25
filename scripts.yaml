@@ -1,3 +1,6 @@
+(variables) :
+  DIRS: bloc_enhancer bloc_enhancer_gen
+
 setup:
     - dart pub get --precompile
 
@@ -15,3 +18,89 @@ build_runner:
   clean:
     (aliases): c
     (command): cd bloc_enhancer_gen && dart run build_runner clean
+
+
+_packages:
+  - cd bloc_enhancer &&
+  - cd bloc_enhancer_gen &&
+
+format: "{$_packages} dart format ."
+analyze: "{$_packages} dart analyze ."
+
+publish:
+  (bail):
+  (command):
+    - sip test --bail --recursive --concurrent
+    - "{$prep}"
+    - "{$_packages} dart pub publish"
+    - "{$publish:commit}"
+    - "{$publish:tag}"
+    - "{$publish:_push}"
+  commit: |
+    # get version from changelog
+    version=$(grep -m 1 "# " CHANGELOG.md | awk '{print $2}')
+
+    echo "Committing version $version"
+    git add .
+    git commit -m "v$version"
+  tag: |
+    # get version from changelog
+    version=$(grep -m 1 "# " CHANGELOG.md | awk '{print $2}')
+
+    echo "Tagging version $version"
+    git tag -a "v$version" -m "v$version"
+  _push: |
+    echo "Pushing to origin"
+    git push
+    git push --tags
+
+license:
+  add:
+    - sh scripts/replace_license_blob.sh bloc_enhancer_gen
+    - sh scripts/replace_license_blob.sh bloc_enhancer_test
+    - sh scripts/replace_license_blob.sh bloc_enhancer
+
+prep:
+  (command):
+    - (+) {$format} --set-exit-if-changed
+    - (+) {$analyze} --fatal-infos --fatal-warnings
+    - (+) {$prep:pubspecs}
+    - (+) {$prep:changelog}
+    - (+) {$prep:conduct}
+    - (+) {$prep:contributing}
+    - (+) {$prep:license}
+    - '{$license:add}'
+    - sip pub get -r
+  changelog: |
+    echo "Copying CHANGELOG.md to all packages"
+    DIRS="{DIRS}"
+    for dir in $DIRS; do
+      cp CHANGELOG.md $dir/CHANGELOG.md
+    done
+  conduct: |
+    echo "Copying CODE_OF_CONDUCT.md to all packages"
+    DIRS="{DIRS}"
+    for dir in $DIRS; do
+      cp CODE_OF_CONDUCT.md $dir/CODE_OF_CONDUCT.md
+    done
+  contributing: |
+    echo "Copying CONTRIBUTING.md to all packages"
+    DIRS="{DIRS}"
+    for dir in $DIRS; do
+      cp CONTRIBUTING.md $dir/CONTRIBUTING.md
+    done
+  license: |
+    echo "Copying LICENSE to all packages"
+    DIRS="{DIRS}"
+    for dir in $DIRS; do
+      cp LICENSE $dir/LICENSE
+    done
+  pubspecs: |
+    # get version from changelog
+    version=$(grep -m 1 "# " CHANGELOG.md | awk '{print $2}')
+
+    echo "Updating pubspec.yaml version to $version"
+    DIRS="{DIRS}"
+    for dir in $DIRS; do
+      sed -i '' "s|^version: .*|version: $version|g" "$dir/pubspec.yaml"
+    done

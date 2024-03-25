@@ -7,18 +7,15 @@ environment:
 
 dependencies:
   analyzer: ">=5.0.0 <7.0.0"
-  bloc_enhancer:
-    git:
-      url: https://github.com/Couchsurfing/dart-bloc-enhancer
-      path: bloc_enhancer
-  build: ^2.4.1
-  change_case: ^2.0.1
-  code_builder: ^4.9.0
-  dart_style: ^2.3.4
+  bloc_enhancer: ">=0.1.0 <1.0.0"
+  build: ">=2.4.0 <3.0.0"
+  change_case: ">=2.0.0 <3.0.0"
+  code_builder: ">=4.0.0 <5.0.0"
+  dart_style: ">=2.0.0 <3.0.0"
   equatable: ^2.0.5
   json_annotation: ^4.8.1
   meta: ">=1.0.0 <2.0.0"
-  source_gen: ^1.4.0
+  source_gen: ">=1.4.0 <2.0.0"
 
 dev_dependencies:
   bloc: ^8.1.2

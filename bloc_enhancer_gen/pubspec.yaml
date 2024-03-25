@@ -1,5 +1,12 @@
 name: bloc_enhancer_gen
 description: A code generator for simplifying Bloc event and state classes, enhancing code readability and reducing naming conflicts.
+
+homepage: https://github.com/Couchsurfing/dart-bloc-enhancer
+repository: https://github.com/Couchsurfing/dart-bloc-enhancer
+issue_tracker: https://github.com/Couchsurfing/dart-bloc-enhancer/issues
+
+topics: ['bloc', 'code-generation', 'enhance', 'state']
+
 version: 0.1.0
 
 environment:

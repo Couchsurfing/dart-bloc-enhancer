@@ -1,3 +1,3 @@
-# 0.1.0 | 1.9.2023
+# 0.1.0 | 3.25.2024
 
-Initial Release!
+Initial Release

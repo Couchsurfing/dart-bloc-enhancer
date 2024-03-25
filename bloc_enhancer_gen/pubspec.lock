@@ -232,14 +232,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
-  generator_test:
-    dependency: "direct dev"
-    description:
-      name: generator_test
-      sha256: e92701a11e77b814fcc23f1e5aed4ee26e95c08e14026231a4c2dade7d97bb47
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.1"
   glob:
     dependency: transitive
     description:
@@ -513,13 +505,13 @@ packages:
     source: hosted
     version: "1.2.1"
   test:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: test
-      sha256: "3d028996109ad5c253674c7f347822fb994a087614d6f353e6039704b4661ff2"
+      sha256: "7ee446762c2c50b3bd4ea96fe13ffac69919352bd3b4b17bac3f3465edc58073"
       url: "https://pub.dev"
     source: hosted
-    version: "1.25.0"
+    version: "1.25.2"
   test_api:
     dependency: transitive
     description:

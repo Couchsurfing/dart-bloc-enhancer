@@ -1,6 +1,5 @@
-import 'package:test/test.dart';
-
 import 'package:_/lib.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('$SimpleBloc', () {
@@ -19,6 +18,14 @@ void main() {
         expect(() => state.asReady, throwsA(isA()));
         expect(() => state.asError, throwsA(isA()));
       });
+    });
+
+    test('does not add events after bloc is closed', () async {
+      final bloc = SimpleBloc();
+
+      await bloc.close();
+
+      expect(bloc.events.init, returnsNormally);
     });
   });
 }

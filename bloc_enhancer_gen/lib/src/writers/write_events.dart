@@ -110,6 +110,12 @@ List<Method> _writeEventMethod(ClassElement event) {
         )
         ..body = Block.of(
           [
+            Block.of([
+              Code('if ('),
+              refer('_bloc').property('isClosed').code,
+              Code(')'),
+              refer('').returned.statement,
+            ]),
             refer('_bloc').property('add').call([
               refer('${event.name}${ctor.name == '' ? '' : '.${ctor.name}'}')
                   .newInstance(

@@ -1,3 +1,21 @@
+# 0.3.0 | 9.27.2024
+
+## Features
+
+- Support creating event factories
+  - Annotate the base event class with `@createFactory`
+
+## Enhancements
+
+- Check for used names while creating event & state methods
+  - If a name conflicts, the method's name will be suffixed with a number
+  - This applies to create factories and event methods
+
+## Breaking Changes
+
+- Deprecate `@createStateFactory` in favor of `@createFactory`
+  - This will be removed in a future release
+
 # 0.2.0+1 | 8.20.2024
 
 ## Features

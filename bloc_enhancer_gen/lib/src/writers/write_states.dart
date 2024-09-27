@@ -16,6 +16,7 @@ limitations under the License.
 */
 // --- LICENSE ---
 import 'package:analyzer/dart/element/element.dart';
+import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
 import 'package:change_case/change_case.dart';
@@ -117,11 +118,29 @@ Iterable<Method> _writeCreatorMethod(StateElement element) sync* {
     return name.replaceAll(RegExp('^_+'), '');
   }
 
+  final usedNames = <String, int>{};
+
   for (final ctor in element.element.constructors) {
-    final ctorName = ctor.name.isNotEmpty
-        ? '${removePrivate(element.name)}_${removePrivate(ctor.name)}'
-            .toCamelCase()
-        : removePrivate(element.name).toCamelCase();
+    final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
+      ctor,
+      throwOnUnresolved: false,
+    );
+    if (shouldIgnore) {
+      continue;
+    }
+
+    var ctorName = removePrivate(element.name).toCamelCase();
+
+    if (ctor.name.isNotEmpty) {
+      ctorName = '${removePrivate(element.name)}_${removePrivate(ctor.name)}'
+          .toCamelCase();
+    }
+
+    if (usedNames[ctorName] case final count?) {
+      ctorName += '$count';
+    }
+
+    usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
 
     final classAccess = ctor.name.isEmpty
         ? ctor.enclosingElement.name

@@ -25,6 +25,8 @@ List<Spec> writeEvents(List<BlocElement> bloc) {
   final eventClasses = bloc.map(_writeEventsClass).toList();
   final extensions = bloc.map(_writeExtension).toList();
 
+  // TODO: create a creator class for the events to support testing
+
   return [
     ...eventClasses,
     ...extensions,
@@ -32,6 +34,8 @@ List<Spec> writeEvents(List<BlocElement> bloc) {
 }
 
 Class _writeEventsClass(BlocElement bloc) {
+  final usedNames = <String, int>{};
+
   final events = Class(
     (b) => b
       ..name = '_${bloc.bloc.name}Events'
@@ -56,14 +60,16 @@ Class _writeEventsClass(BlocElement bloc) {
             ..type = refer(bloc.bloc.name),
         ),
       )
-      ..methods.addAll(bloc.events.expand(_writeEventMethod)),
+      ..methods
+          .addAll(bloc.events.expand((e) => _writeEventMethod(e, usedNames))),
   );
 
   return events;
 }
 
-List<Method> _writeEventMethod(ClassElement event) {
+List<Method> _writeEventMethod(ClassElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
+
   for (final ctor in event.constructors) {
     // check for ignore annotation
 
@@ -97,9 +103,20 @@ List<Method> _writeEventMethod(ClassElement event) {
       );
     }
 
+    var name = switch (ctor.name) {
+      final name when name.isEmpty => eventName,
+      '_' => eventName,
+      _ => ctor.name,
+    };
+
+    if (usedNames[name] case final count?) {
+      name = '$name$count';
+    }
+    usedNames[name] = (usedNames[name] ?? 0) + 1;
+
     final method = Method.returnsVoid(
       (b) => b
-        ..name = ctor.name == '' ? eventName : ctor.name
+        ..name = name
         ..requiredParameters.addAll(
           ctor.parameters.where((p) => p.isRequiredPositional).map(param),
         )

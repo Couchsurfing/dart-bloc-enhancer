@@ -80,6 +80,8 @@ Class _writeCreatorClass(BlocElement element) {
   ///
   /// Intended to be used for **_TESTING_** purposes only.''';
 
+  final usedNames = <String, int>{};
+
   return Class(
     (b) => b
       ..name = '_\$${element.state.name}Creator'
@@ -89,12 +91,13 @@ Class _writeCreatorClass(BlocElement element) {
       )
       ..methods.addAll(element.states
           .where((e) => e.createFactory)
-          .map(_writeCreatorMethod)
+          .map((e) => _writeCreatorMethod(e, usedNames))
           .expand((e) => e)),
   );
 }
 
-Iterable<Method> _writeCreatorMethod(StateElement element) sync* {
+Iterable<Method> _writeCreatorMethod(
+    StateElement element, Map<String, int> usedNames) sync* {
   Parameter param(ParameterElement p, [bool? isRequired]) {
     return Parameter(
       (b) {
@@ -117,8 +120,6 @@ Iterable<Method> _writeCreatorMethod(StateElement element) sync* {
   String removePrivate(String name) {
     return name.replaceAll(RegExp('^_+'), '');
   }
-
-  final usedNames = <String, int>{};
 
   for (final ctor in element.element.constructors) {
     final shouldIgnore = ignoreChecker.hasAnnotationOfExact(

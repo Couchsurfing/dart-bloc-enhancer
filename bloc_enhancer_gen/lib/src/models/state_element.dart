@@ -16,15 +16,20 @@ limitations under the License.
 */
 // --- LICENSE ---
 import 'package:analyzer/dart/element/element.dart';
+import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
 
-class StateElement {
+class StateElement implements FactoryElement {
   StateElement({
     required this.element,
     required this.createFactory,
   });
 
+  @override
   final ClassElement element;
+
+  @override
   bool createFactory;
 
+  @override
   String get name => element.name;
 }

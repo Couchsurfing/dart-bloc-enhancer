@@ -14,19 +14,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-// --- LICENSE ---
-import 'package:analyzer/dart/element/element.dart';
-import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
+import 'package:bloc_enhancer_gen/src/writers/write_factory.dart';
 import 'package:change_case/change_case.dart';
 import 'package:code_builder/code_builder.dart';
 
 List<Spec> writeStates(List<BlocElement> blocs) {
   final extensions = blocs.map(_writeTypingExtension).toList();
 
-  final redirects = blocs.where((e) => e.shouldCreateFactory);
-  final creatorClasses = redirects.map(_writeCreatorClass).toList();
+  final creatorClasses = WriteFactory.write(
+    blocs.where((e) => e.shouldCreateStateFactory),
+    (e) => e.state,
+    (e) => e.states,
+  );
 
   return [
     ...extensions,
@@ -72,105 +73,4 @@ Method _writeAsStateMethod(StateElement state) {
   );
 
   return method;
-}
-
-Class _writeCreatorClass(BlocElement element) {
-  final docs = '''
-  /// Creates a new instance of [${element.state.name}] with the given parameters
-  ///
-  /// Intended to be used for **_TESTING_** purposes only.''';
-
-  final usedNames = <String, int>{};
-
-  return Class(
-    (b) => b
-      ..name = '_\$${element.state.name}Creator'
-      ..docs.add(docs)
-      ..constructors.add(
-        Constructor((b) => b..constant = true),
-      )
-      ..methods.addAll(element.states
-          .where((e) => e.createFactory)
-          .map((e) => _writeCreatorMethod(e, usedNames))
-          .expand((e) => e)),
-  );
-}
-
-Iterable<Method> _writeCreatorMethod(
-    StateElement element, Map<String, int> usedNames) sync* {
-  Parameter param(ParameterElement p, [bool? isRequired]) {
-    return Parameter(
-      (b) {
-        b
-          ..name = p.name
-          ..named = p.isNamed
-          ..defaultTo =
-              p.defaultValueCode == null ? null : Code(p.defaultValueCode!)
-          ..type = refer(
-            p.type.getDisplayString(withNullability: true),
-          );
-
-        if (isRequired != null) {
-          b.required = isRequired;
-        }
-      },
-    );
-  }
-
-  String removePrivate(String name) {
-    return name.replaceAll(RegExp('^_+'), '');
-  }
-
-  for (final ctor in element.element.constructors) {
-    final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
-      ctor,
-      throwOnUnresolved: false,
-    );
-    if (shouldIgnore) {
-      continue;
-    }
-
-    var ctorName = removePrivate(element.name).toCamelCase();
-
-    if (ctor.name.isNotEmpty) {
-      ctorName = '${removePrivate(element.name)}_${removePrivate(ctor.name)}'
-          .toCamelCase();
-    }
-
-    if (usedNames[ctorName] case final count?) {
-      ctorName += '$count';
-    }
-
-    usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
-
-    final classAccess = ctor.name.isEmpty
-        ? ctor.enclosingElement.name
-        : '${ctor.enclosingElement.name}.${ctor.name}';
-
-    yield Method(
-      (b) => b
-        ..name = ctorName
-        ..returns = refer(ctor.enclosingElement.name)
-        ..lambda = true
-        ..requiredParameters.addAll(
-          ctor.parameters.where((p) => p.isRequiredPositional).map(param),
-        )
-        ..optionalParameters.addAll(
-          ctor.parameters
-              .where((p) => !p.isRequiredPositional)
-              .map((p) => param(p, p.isRequiredNamed)),
-        )
-        ..body = refer(classAccess).newInstance(
-          ctor.parameters.where((p) => p.isPositional).map(
-            (p) {
-              return refer(p.name);
-            },
-          ),
-          {
-            for (final p in ctor.parameters.where((p) => p.isNamed))
-              p.name: refer(p.name),
-          },
-        ).code,
-    );
-  }
 }

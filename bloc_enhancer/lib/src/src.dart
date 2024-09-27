@@ -27,6 +27,6 @@ final class Ignore {
 }
 
 @Target({TargetKind.classType})
-final class StateFactory {
-  const StateFactory();
+final class CreateFactory {
+  const CreateFactory();
 }

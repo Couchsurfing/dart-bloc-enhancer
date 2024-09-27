@@ -29,6 +29,7 @@ class Settings implements SettingsInterface {
     required this.avoidStates,
     required this.createStateFactory,
     required this.enhance,
+    required this.createEventFactory,
   });
 
   const Settings.defaults({
@@ -37,6 +38,7 @@ class Settings implements SettingsInterface {
     this.avoidStates = const [],
     this.createStateFactory = false,
     this.enhance = const [],
+    this.createEventFactory = false,
   });
 
   factory Settings.fromJson(Map json) {
@@ -78,6 +80,9 @@ class Settings implements SettingsInterface {
 
   @override
   final bool createStateFactory;
+
+  @override
+  final bool createEventFactory;
 
   Map<String, dynamic> toJson() => _$SettingsToJson(this);
 }

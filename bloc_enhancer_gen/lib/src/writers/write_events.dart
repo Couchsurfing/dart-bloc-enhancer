@@ -18,18 +18,25 @@ limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
+import 'package:bloc_enhancer_gen/src/models/event_element.dart';
+import 'package:bloc_enhancer_gen/src/writers/write_factory.dart';
 import 'package:change_case/change_case.dart';
 import 'package:code_builder/code_builder.dart';
 
-List<Spec> writeEvents(List<BlocElement> bloc) {
-  final eventClasses = bloc.map(_writeEventsClass).toList();
-  final extensions = bloc.map(_writeExtension).toList();
+List<Spec> writeEvents(List<BlocElement> blocs) {
+  final eventClasses = blocs.map(_writeEventsClass);
+  final extensions = blocs.map(_writeExtension);
 
-  // TODO: create a creator class for the events to support testing
+  final creatorClasses = WriteFactory.write(
+    blocs.where((e) => e.shouldCreateEventFactory),
+    (e) => e.event,
+    (e) => e.events,
+  );
 
   return [
     ...eventClasses,
     ...extensions,
+    ...creatorClasses,
   ];
 }
 
@@ -67,10 +74,10 @@ Class _writeEventsClass(BlocElement bloc) {
   return events;
 }
 
-List<Method> _writeEventMethod(ClassElement event, Map<String, int> usedNames) {
+List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
 
-  for (final ctor in event.constructors) {
+  for (final ctor in event.element.constructors) {
     // check for ignore annotation
 
     final hasIgnoreAnnotation = ignoreChecker.hasAnnotationOfExact(

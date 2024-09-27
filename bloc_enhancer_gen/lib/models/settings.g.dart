@@ -21,6 +21,7 @@ Settings _$SettingsFromJson(Map json) => Settings.defaults(
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      createEventFactory: json['create_event_factory'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SettingsToJson(Settings instance) => <String, dynamic>{
@@ -29,4 +30,5 @@ Map<String, dynamic> _$SettingsToJson(Settings instance) => <String, dynamic>{
       'avoid_states': instance.avoidStates,
       'enhance': instance.enhance,
       'create_state_factory': instance.createStateFactory,
+      'create_event_factory': instance.createEventFactory,
     };

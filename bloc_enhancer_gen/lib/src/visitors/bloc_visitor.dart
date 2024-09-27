@@ -20,6 +20,7 @@ import 'package:analyzer/dart/element/visitor.dart';
 import 'package:bloc_enhancer_gen/models/settings.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
+import 'package:bloc_enhancer_gen/src/models/event_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
 
 class BlocVisitor extends RecursiveElementVisitor<void> {
@@ -76,18 +77,30 @@ class BlocVisitor extends RecursiveElementVisitor<void> {
       throw Exception('Bloc must have 2 type arguments');
     }
 
-    bool createFactory = settings.createStateFactory;
+    final createStateFactory = switch (settings.createStateFactory) {
+      false => createFactoryChecker.hasAnnotationOfExact(
+          state,
+          throwOnUnresolved: false,
+        ),
+      _ => true,
+    };
 
-    if (!createFactory) {
-      createFactory = stateFactoryChecker.hasAnnotationOfExact(state,
-          throwOnUnresolved: false);
-    }
+    final createEventFactory = switch (settings.createEventFactory) {
+      false => createFactoryChecker.hasAnnotationOfExact(
+          event,
+          throwOnUnresolved: false,
+        ),
+      _ => true,
+    };
 
     final blocElement = BlocElement(
-      event: event,
+      event: EventElement(
+        element: event,
+        createFactory: createEventFactory,
+      ),
       state: StateElement(
         element: state,
-        createFactory: createFactory,
+        createFactory: createStateFactory,
       ),
       bloc: element,
     );

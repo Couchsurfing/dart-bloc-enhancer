@@ -20,6 +20,7 @@ import 'dart:async' show FutureOr;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/models/settings.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
+import 'package:bloc_enhancer_gen/src/models/event_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
 import 'package:bloc_enhancer_gen/src/visitors/bloc_visitor.dart';
 import 'package:bloc_enhancer_gen/src/writers/write_file.dart';
@@ -60,7 +61,25 @@ final class BlocEnhancerGenerator extends Generator {
             }
           }
 
-          if (canAdd) bloc.addEvent(clazz);
+          if (canAdd) {
+            final createFactory = switch (true) {
+              _ when bloc.event.createFactory => true,
+              _
+                  when createFactoryChecker.hasAnnotationOf(
+                    clazz,
+                    throwOnUnresolved: false,
+                  ) =>
+                true,
+              _ => settings.createEventFactory,
+            };
+
+            bloc.addEvent(
+              EventElement(
+                element: clazz,
+                createFactory: createFactory,
+              ),
+            );
+          }
         } else if (superTypes.contains(bloc.state.name)) {
           bool canAdd = true;
 
@@ -73,22 +92,25 @@ final class BlocEnhancerGenerator extends Generator {
             }
           }
 
-          bool createFactory = settings.createStateFactory;
+          if (canAdd) {
+            final createFactory = switch (true) {
+              _ when bloc.state.createFactory => true,
+              _
+                  when createFactoryChecker.hasAnnotationOf(
+                    clazz,
+                    throwOnUnresolved: false,
+                  ) =>
+                true,
+              _ => settings.createStateFactory,
+            };
 
-          if (bloc.state.createFactory) {
-            createFactory = true;
-          } else if (stateFactoryChecker.hasAnnotationOf(clazz,
-              throwOnUnresolved: false)) {
-            createFactory = true;
-          }
-
-          if (canAdd)
             bloc.addState(
               StateElement(
                 element: clazz,
                 createFactory: createFactory,
               ),
             );
+          }
         }
       }
     }

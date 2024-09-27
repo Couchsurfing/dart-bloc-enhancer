@@ -18,6 +18,7 @@ limitations under the License.
 import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/checkers/type_checker.dart';
+import 'package:bloc_enhancer_gen/src/models/event_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
 
 class BlocElement {
@@ -28,7 +29,7 @@ class BlocElement {
   })  : _states = [],
         _events = [];
 
-  final ClassElement event;
+  final EventElement event;
   final StateElement state;
   final ClassElement bloc;
 
@@ -49,7 +50,7 @@ class BlocElement {
   }
 
   bool _hasStateFactory(ClassElement element) {
-    return _hasAnnotation(element, stateFactoryChecker);
+    return _hasAnnotation(element, createFactoryChecker);
   }
 
   bool _hasAnnotation(ClassElement element, TypeChecker checker) {
@@ -61,19 +62,32 @@ class BlocElement {
     return hasAnnotation;
   }
 
-  void addEvent(ClassElement event) {
-    if (_hasIgnore(event)) {
+  void addEvent(EventElement event) {
+    if (_hasIgnore(event.element)) {
       return;
+    }
+
+    if (!event.createFactory) {
+      event.createFactory = _hasStateFactory(event.element);
     }
 
     _events.add(event);
   }
 
   final List<StateElement> _states;
-  final List<ClassElement> _events;
+  final List<EventElement> _events;
   List<StateElement> get states => _states;
-  List<ClassElement> get events => _events;
+  List<EventElement> get events => _events;
 
-  bool get shouldCreateFactory =>
-      state.createFactory || _states.any((e) => e.createFactory);
+  bool get shouldCreateStateFactory =>
+      state.createFactory ||
+      _states.any(
+        (e) => e.createFactory,
+      );
+
+  bool get shouldCreateEventFactory =>
+      event.createFactory ||
+      _events.any(
+        (e) => e.createFactory,
+      );
 }

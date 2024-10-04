@@ -56,7 +56,7 @@ class WriteFactory {
           Constructor((b) => b..constant = true),
         )
         ..methods.addAll(factories
-            .where((e) => e.createFactory)
+            .where((e) => e.createFactory && !e.element.isAbstract)
             .map((e) => _writeCreatorMethod(e, usedNames))
             .expand((e) => e)),
     );

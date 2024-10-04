@@ -1,3 +1,9 @@
+# 0.3.1 | 10.4.2024
+
+## Fixes
+
+- Do not generate a factory for abstract classes
+
 # 0.3.0 | 9.27.2024
 
 ## Features

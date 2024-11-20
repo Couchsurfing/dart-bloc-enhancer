@@ -45,6 +45,7 @@ Extension _writeTypingExtension(BlocElement bloc) {
       ..methods.addAll([
         ...bloc.states.map(_writeIsStateMethod),
         ...bloc.states.map(_writeAsStateMethod),
+        ...bloc.states.map(_writeAsIfStateMethod),
       ]),
   );
 
@@ -59,6 +60,23 @@ Method _writeIsStateMethod(StateElement state) {
       ..type = MethodType.getter
       ..lambda = true
       ..body = Code('this is ${state.name}'),
+  );
+
+  return method;
+}
+
+Method _writeAsIfStateMethod(StateElement state) {
+  final method = Method(
+    (b) => b
+      ..name = 'asIf${state.name.toPascalCase()}'
+      ..returns = refer('${state.name}?')
+      ..type = MethodType.getter
+      ..lambda = true
+      ..body = Code('''switch (this) {
+      ${state.name}() => this,
+      _ => null,
+}
+'''),
   );
 
   return method;

@@ -72,11 +72,7 @@ Method _writeAsIfStateMethod(StateElement state) {
       ..returns = refer('${state.name}?')
       ..type = MethodType.getter
       ..lambda = true
-      ..body = Code('''switch (this) {
-      ${state.name}() => this,
-      _ => null,
-}
-'''),
+      ..body = Code('this is ${state.name} ? this as ${state.name} : null'),
   );
 
   return method;

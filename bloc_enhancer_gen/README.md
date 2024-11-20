@@ -23,9 +23,14 @@ There are packages that help you with mapping out your states... but dart only a
 bloc.events.createUser(name: 'John');
 
 // Intuitive state type check and retrieval
+if (bloc.state.asIfReady case final readyState?) {
+    // Handle the ready state
+}
+
+// or
 if (bloc.state.isReady) {
-final readyState = bloc.state.asReady;
-// Handle the ready state
+    final readyState = bloc.state.asReady;
+    // Handle the ready state
 }
 ```
 
@@ -88,8 +93,8 @@ targets:
 class UserEvent {}
 class _Create extends UserEvent {}
 class _UpdateUser extends UserEvent {
-    const _Update.name(String this.name): email = null;
-    const UpdateUser.email(String this.email): name = null;
+    const _UpdateUser.name(String this.name): email = null;
+    const _UpdateUser.email(String this.email): name = null;
 
     final String? name;
     final String? email;

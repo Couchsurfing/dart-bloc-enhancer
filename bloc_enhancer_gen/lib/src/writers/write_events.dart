@@ -100,7 +100,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
             ..defaultTo =
                 p.defaultValueCode == null ? null : Code(p.defaultValueCode!)
             ..type = refer(
-              p.type.getDisplayString(withNullability: true),
+              p.type.getDisplayString(),
             );
 
           if (isRequired != null) {

@@ -75,7 +75,7 @@ class WriteFactory {
             ..defaultTo =
                 p.defaultValueCode == null ? null : Code(p.defaultValueCode!)
             ..type = refer(
-              p.type.getDisplayString(withNullability: true),
+              p.type.getDisplayString(),
             );
 
           if (isRequired != null) {

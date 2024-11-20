@@ -1,3 +1,15 @@
+# 0.3.2 | 11.20.2024
+
+## Features
+
+- Create "as if" getters for state retrieval
+
+```dart
+if (state.asIfReady case final readyState?) {
+    // Handle the ready state
+}
+```
+
 # 0.3.1 | 10.4.2024
 
 ## Fixes

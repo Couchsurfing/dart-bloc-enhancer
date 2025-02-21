@@ -5,7 +5,7 @@ homepage: https://github.com/Couchsurfing/dart-bloc-enhancer
 repository: https://github.com/Couchsurfing/dart-bloc-enhancer
 issue_tracker: https://github.com/Couchsurfing/dart-bloc-enhancer/issues
 
-topics: ['bloc', 'code-generation', 'enhance', 'state']
+topics: ["bloc", "code-generation", "enhance", "state"]
 
 version: 0.3.2+1
 
@@ -18,12 +18,12 @@ dependencies:
   build: ^2.4.1
   change_case: ^2.0.1
   code_builder: ^4.9.0
-  dart_style: ^2.3.4
+  dart_style: ^3.0.0
   equatable: ^2.0.5
   json_annotation: ^4.8.1
   meta: ">=1.0.0 <2.0.0"
   path: ^1.9.0
-  source_gen: ^1.4.0
+  source_gen: ^2.0.0
   source_span: ^1.10.0
 
 dev_dependencies:

@@ -1,3 +1,9 @@
+# 0.4.0 | 2.21.2025
+
+## Chore
+
+- Update Dart Formatter and Dart Style to latest versions
+
 # 0.3.2+1 | 11.20.2024
 
 ## Features

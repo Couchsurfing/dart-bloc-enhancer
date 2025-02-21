@@ -112,13 +112,13 @@ class WriteFactory {
       usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
 
       final classAccess = ctor.name.isEmpty
-          ? ctor.enclosingElement.name
-          : '${ctor.enclosingElement.name}.${ctor.name}';
+          ? ctor.enclosingElement3.name
+          : '${ctor.enclosingElement3.name}.${ctor.name}';
 
       yield Method(
         (b) => b
           ..name = ctorName
-          ..returns = refer(ctor.enclosingElement.name)
+          ..returns = refer(ctor.enclosingElement3.name)
           ..lambda = true
           ..requiredParameters.addAll(
             ctor.parameters.where((p) => p.isRequiredPositional).map(param),

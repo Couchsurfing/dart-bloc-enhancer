@@ -1,8 +1,8 @@
-(variables) :
+(variables):
   DIRS: bloc_enhancer bloc_enhancer_gen
 
 setup:
-    - dart pub get --precompile
+  - dart pub get --precompile
 
 build_runner:
   (aliases): br
@@ -21,7 +21,6 @@ build_runner:
     (command): cd bloc_enhancer_gen && dart run build_runner clean
     test: cd bloc_enhancer_test && dart run build_runner clean
 
-
 _packages:
   - cd bloc_enhancer &&
   - cd bloc_enhancer_gen &&
@@ -32,6 +31,7 @@ analyze: "{$_packages} dart analyze ."
 publish:
   (bail):
   (command):
+    - "{$build_runner:build:test}"
     - sip test --bail --recursive --concurrent
     - "{$prep}"
     - "{$_packages} dart pub publish"
@@ -59,7 +59,7 @@ publish:
 test:
   (bail):
   (command):
-    - '{$build_runner:build:test}'
+    - "{$build_runner:build:test}"
     - sip test --recursive --concurrent
 
 license:
@@ -77,7 +77,7 @@ prep:
     - (+) {$prep:conduct}
     - (+) {$prep:contributing}
     - (+) {$prep:license}
-    - '{$license:add}'
+    - "{$license:add}"
     - sip pub get -r
   changelog: |
     echo "Copying CHANGELOG.md to all packages"

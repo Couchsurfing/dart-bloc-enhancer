@@ -68,4 +68,7 @@ extension $SimpleStateTypingX on SimpleState {
   _Error get asError => this as _Error;
   _Ready get asReady => this as _Ready;
   _Loading get asLoading => this as _Loading;
+  _Error? get asIfError => this is _Error ? this as _Error : null;
+  _Ready? get asIfReady => this is _Ready ? this as _Ready : null;
+  _Loading? get asIfLoading => this is _Loading ? this as _Loading : null;
 }

@@ -43,9 +43,12 @@ Extension _writeTypingExtension(BlocElement bloc) {
       ..name = '\$${bloc.state.name}TypingX'
       ..on = refer(bloc.state.name)
       ..methods.addAll([
-        ...bloc.states.map(_writeIsStateMethod),
-        ...bloc.states.map(_writeAsStateMethod),
-        ...bloc.states.map(_writeAsIfStateMethod),
+        for (final state in bloc.states)
+          if (!state.element.isAbstract) ...[
+            _writeIsStateMethod(state),
+            _writeAsStateMethod(state),
+            _writeAsIfStateMethod(state),
+          ],
       ]),
   );
 

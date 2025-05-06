@@ -16,6 +16,7 @@ limitations under the License.
 */
 // --- LICENSE ---
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:bloc_enhancer_gen/models/settings.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
@@ -66,8 +67,7 @@ class BlocVisitor extends RecursiveElementVisitor<void> {
       throw Exception('Bloc must have 2 type arguments');
     }
 
-    final event = typeArgs[0].element;
-    final state = typeArgs[1].element;
+    final [DartType(element: event), DartType(element: state)] = typeArgs;
 
     if (event == null || state == null) {
       throw Exception('Bloc must have 2 type arguments');

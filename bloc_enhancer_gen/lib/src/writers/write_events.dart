@@ -67,8 +67,10 @@ Class _writeEventsClass(BlocElement bloc) {
             ..type = refer(bloc.bloc.name),
         ),
       )
-      ..methods
-          .addAll(bloc.events.expand((e) => _writeEventMethod(e, usedNames))),
+      ..methods.addAll([
+        for (final event in bloc.events)
+          if (!event.element.isAbstract) ..._writeEventMethod(event, usedNames),
+      ]),
   );
 
   return events;

@@ -1,3 +1,9 @@
+# 0.5.1 | 5.5.2025
+
+## Enhancements
+
+- Ignore abstract classes when generating event & state methods
+
 # 0.5.0 | 2.22.2025
 
 ## Chore

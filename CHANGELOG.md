@@ -1,3 +1,9 @@
+# 0.6.0 | 9.19.2025
+
+## Chore
+
+- Update Analyzer dependency
+
 # 0.5.1 | 5.5.2025
 
 ## Enhancements

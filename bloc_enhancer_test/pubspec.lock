@@ -54,7 +54,7 @@ packages:
       path: "../bloc_enhancer_gen"
       relative: true
     source: path
-    version: "0.5.1"
+    version: "0.6.0"
   boolean_selector:
     dependency: transitive
     description:

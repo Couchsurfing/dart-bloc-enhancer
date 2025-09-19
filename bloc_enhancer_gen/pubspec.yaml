@@ -7,13 +7,14 @@ issue_tracker: https://github.com/Couchsurfing/dart-bloc-enhancer/issues
 
 topics: ["bloc", "code-generation", "enhance", "state"]
 
-version: 0.5.1
+version: 0.6.0
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   analyzer: ">=7.5.0 <9.0.0"
+  bloc: ">=7.0.0"
   bloc_enhancer: ">=0.1.0 <1.0.0"
   build: ">=4.0.0 <5.0.0"
   change_case: ^2.0.1
@@ -27,7 +28,6 @@ dependencies:
   source_span: ^1.10.0
 
 dev_dependencies:
-  bloc: ^8.1.2
   build_runner: ^2.8.0
   build_test: ^3.4.0
   json_serializable: ^6.11.1

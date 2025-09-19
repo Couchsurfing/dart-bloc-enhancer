@@ -15,14 +15,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:bloc_enhancer/bloc_enhancer.dart';
-import 'package:bloc_enhancer_gen/src/checkers/type_checker.dart';
 
-const TypeChecker blocChecker =
-    TypeChecker.fromName('Bloc', packageName: 'bloc');
-final TypeChecker enhanceChecker =
-    TypeChecker.fromName('$Enhance', packageName: 'bloc_enhancer');
-final TypeChecker ignoreChecker =
-    TypeChecker.fromName('$Ignore', packageName: 'bloc_enhancer');
-final TypeChecker createFactoryChecker =
-    TypeChecker.fromName('$CreateFactory', packageName: 'bloc_enhancer');
+import 'package:bloc/bloc.dart';
+import 'package:bloc_enhancer/bloc_enhancer.dart';
+import 'package:source_gen/source_gen.dart' show TypeChecker;
+
+final TypeChecker blocChecker = TypeChecker.typeNamed(
+  Bloc,
+  inPackage: 'bloc',
+  inSdk: false,
+);
+
+final TypeChecker enhanceChecker = TypeChecker.typeNamed(
+  Enhance,
+  inPackage: 'bloc_enhancer',
+  inSdk: false,
+);
+
+final TypeChecker ignoreChecker = TypeChecker.typeNamed(
+  Ignore,
+  inPackage: 'bloc_enhancer',
+  inSdk: false,
+);
+
+final TypeChecker createFactoryChecker = TypeChecker.typeNamed(
+  CreateFactory,
+  inPackage: 'bloc_enhancer',
+  inSdk: false,
+);

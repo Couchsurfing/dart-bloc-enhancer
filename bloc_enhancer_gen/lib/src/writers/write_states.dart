@@ -31,10 +31,7 @@ List<Spec> writeStates(List<BlocElement> blocs) {
     (e) => e.states,
   );
 
-  return [
-    ...extensions,
-    ...creatorClasses,
-  ];
+  return [...extensions, ...creatorClasses];
 }
 
 Extension _writeTypingExtension(BlocElement bloc) {

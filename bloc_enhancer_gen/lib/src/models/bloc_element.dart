@@ -1,4 +1,6 @@
+// ignore_for_file: deprecated_member_use
 // --- LICENSE ---
+
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -15,23 +17,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
-import 'package:bloc_enhancer_gen/src/checkers/type_checker.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
+import 'package:source_gen/source_gen.dart';
 
 class BlocElement {
-  BlocElement({
-    required this.event,
-    required this.state,
-    required this.bloc,
-  })  : _states = [],
-        _events = [];
+  BlocElement({required this.event, required this.state, required this.bloc})
+    : _states = [],
+      _events = [];
 
   final EventElement event;
   final StateElement state;
-  final ClassElement bloc;
+  final ClassElement2 bloc;
 
   void addState(StateElement state) {
     if (_hasIgnore(state.element)) {
@@ -45,15 +44,15 @@ class BlocElement {
     _states.add(state);
   }
 
-  bool _hasIgnore(ClassElement element) {
+  bool _hasIgnore(ClassElement2 element) {
     return _hasAnnotation(element, ignoreChecker);
   }
 
-  bool _hasStateFactory(ClassElement element) {
+  bool _hasStateFactory(ClassElement2 element) {
     return _hasAnnotation(element, createFactoryChecker);
   }
 
-  bool _hasAnnotation(ClassElement element, TypeChecker checker) {
+  bool _hasAnnotation(ClassElement2 element, TypeChecker checker) {
     final hasAnnotation = checker.hasAnnotationOfExact(
       element,
       throwOnUnresolved: false,
@@ -80,14 +79,8 @@ class BlocElement {
   List<EventElement> get events => _events;
 
   bool get shouldCreateStateFactory =>
-      state.createFactory ||
-      _states.any(
-        (e) => e.createFactory,
-      );
+      state.createFactory || _states.any((e) => e.createFactory);
 
   bool get shouldCreateEventFactory =>
-      event.createFactory ||
-      _events.any(
-        (e) => e.createFactory,
-      );
+      event.createFactory || _events.any((e) => e.createFactory);
 }

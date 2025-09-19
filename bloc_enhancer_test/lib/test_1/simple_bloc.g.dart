@@ -63,12 +63,20 @@ extension $SimpleBlocEventsX on SimpleBloc {
 
 extension $SimpleStateTypingX on SimpleState {
   bool get isError => this is _Error;
+
   _Error get asError => this as _Error;
+
   _Error? get asIfError => this is _Error ? this as _Error : null;
+
   bool get isReady => this is _Ready;
+
   _Ready get asReady => this as _Ready;
+
   _Ready? get asIfReady => this is _Ready ? this as _Ready : null;
+
   bool get isLoading => this is _Loading;
+
   _Loading get asLoading => this as _Loading;
+
   _Loading? get asIfLoading => this is _Loading ? this as _Loading : null;
 }

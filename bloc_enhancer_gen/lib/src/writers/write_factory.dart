@@ -1,4 +1,6 @@
 // --- LICENSE ---
+// ignore_for_file: deprecated_member_use
+
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -15,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
@@ -29,9 +31,10 @@ class WriteFactory {
   final Iterable<FactoryElement> factories;
 
   static Iterable<Class> write(
-      Iterable<BlocElement> blocs,
-      FactoryElement Function(BlocElement) root,
-      Iterable<FactoryElement> Function(BlocElement) factories) sync* {
+    Iterable<BlocElement> blocs,
+    FactoryElement Function(BlocElement) root,
+    Iterable<FactoryElement> Function(BlocElement) factories,
+  ) sync* {
     for (final bloc in blocs) {
       final rootFactory = root(bloc);
       final factoryElements = factories(bloc);
@@ -41,7 +44,8 @@ class WriteFactory {
   }
 
   Class _writeCreatorClass() {
-    final docs = '''
+    final docs =
+        '''
   /// Creates a new instance of [${baseFactory.name}] with the given parameters
   ///
   /// Intended to be used for **_TESTING_** purposes only.''';
@@ -52,13 +56,13 @@ class WriteFactory {
       (b) => b
         ..name = '_\$${baseFactory.name}Creator'
         ..docs.add(docs)
-        ..constructors.add(
-          Constructor((b) => b..constant = true),
-        )
-        ..methods.addAll(factories
-            .where((e) => e.createFactory && !e.element.isAbstract)
-            .map((e) => _writeCreatorMethod(e, usedNames))
-            .expand((e) => e)),
+        ..constructors.add(Constructor((b) => b..constant = true))
+        ..methods.addAll(
+          factories
+              .where((e) => e.createFactory && !e.element.isAbstract)
+              .map((e) => _writeCreatorMethod(e, usedNames))
+              .expand((e) => e),
+        ),
     );
   }
 
@@ -66,30 +70,31 @@ class WriteFactory {
     FactoryElement element,
     Map<String, int> usedNames,
   ) sync* {
-    Parameter param(ParameterElement p, [bool? isRequired]) {
-      return Parameter(
-        (b) {
-          b
-            ..name = p.name
-            ..named = p.isNamed
-            ..defaultTo =
-                p.defaultValueCode == null ? null : Code(p.defaultValueCode!)
-            ..type = refer(
-              p.type.getDisplayString(),
-            );
+    Parameter param(FormalParameterElement p, [bool? isRequired]) {
+      return Parameter((b) {
+        b
+          ..name = p.name3 ?? ''
+          ..named = p.isNamed
+          ..defaultTo = p.defaultValueCode == null
+              ? null
+              : Code(p.defaultValueCode!)
+          ..type = refer(p.type.getDisplayString());
 
-          if (isRequired != null) {
-            b.required = isRequired;
-          }
-        },
-      );
+        if (isRequired != null) {
+          b.required = isRequired;
+        }
+      });
     }
 
     String removePrivate(String name) {
+      if (name == 'new') {
+        return '';
+      }
+
       return name.replaceAll(RegExp('^_+'), '');
     }
 
-    for (final ctor in element.element.constructors) {
+    for (final ctor in element.element.constructors2) {
       final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
         ctor,
         throwOnUnresolved: false,
@@ -100,8 +105,8 @@ class WriteFactory {
 
       var ctorName = removePrivate(element.name).toCamelCase();
 
-      if (ctor.name.isNotEmpty) {
-        ctorName = '${removePrivate(element.name)}_${removePrivate(ctor.name)}'
+      if (ctor.name3 case final String name when name.isNotEmpty) {
+        ctorName = '${removePrivate(element.name)}_${removePrivate(name)}'
             .toCamelCase();
       }
 
@@ -111,32 +116,33 @@ class WriteFactory {
 
       usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
 
-      final classAccess = ctor.name.isEmpty
-          ? ctor.enclosingElement3.name
-          : '${ctor.enclosingElement3.name}.${ctor.name}';
+      final classAccess = switch (ctor.name3) {
+        '_' || 'new' || null => ctor.enclosingElement2.name3 ?? '',
+        final name => '${ctor.enclosingElement2.name3 ?? ''}.${name}',
+      };
 
       yield Method(
         (b) => b
           ..name = ctorName
-          ..returns = refer(ctor.enclosingElement3.name)
+          ..returns = refer(ctor.enclosingElement2.name3 ?? '')
           ..lambda = true
           ..requiredParameters.addAll(
-            ctor.parameters.where((p) => p.isRequiredPositional).map(param),
+            ctor.formalParameters
+                .where((p) => p.isRequiredPositional)
+                .map(param),
           )
           ..optionalParameters.addAll(
-            ctor.parameters
+            ctor.formalParameters
                 .where((p) => !p.isRequiredPositional)
                 .map((p) => param(p, p.isRequiredNamed)),
           )
           ..body = refer(classAccess).newInstance(
-            ctor.parameters.where((p) => p.isPositional).map(
-              (p) {
-                return refer(p.name);
-              },
-            ),
+            ctor.formalParameters.where((p) => p.isPositional).map((p) {
+              return refer(p.name3 ?? '');
+            }),
             {
-              for (final p in ctor.parameters.where((p) => p.isNamed))
-                p.name: refer(p.name),
+              for (final p in ctor.formalParameters.where((p) => p.isNamed))
+                p.name3 ?? '': refer(p.name3 ?? ''),
             },
           ).code,
       );

@@ -1,4 +1,6 @@
+// ignore_for_file: deprecated_member_use
 // --- LICENSE ---
+
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -15,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
@@ -33,11 +35,7 @@ List<Spec> writeEvents(List<BlocElement> blocs) {
     (e) => e.events,
   );
 
-  return [
-    ...eventClasses,
-    ...extensions,
-    ...creatorClasses,
-  ];
+  return [...eventClasses, ...extensions, ...creatorClasses];
 }
 
 Class _writeEventsClass(BlocElement bloc) {
@@ -45,7 +43,7 @@ Class _writeEventsClass(BlocElement bloc) {
 
   final events = Class(
     (b) => b
-      ..name = '_${bloc.bloc.name}Events'
+      ..name = '_${bloc.bloc.name3}Events'
       ..constructors.add(
         Constructor(
           (b) => b
@@ -64,7 +62,7 @@ Class _writeEventsClass(BlocElement bloc) {
           (b) => b
             ..name = '_bloc'
             ..modifier = FieldModifier.final$
-            ..type = refer(bloc.bloc.name),
+            ..type = refer(bloc.bloc.name3 ?? ''),
         ),
       )
       ..methods.addAll([
@@ -79,7 +77,7 @@ Class _writeEventsClass(BlocElement bloc) {
 List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
 
-  for (final ctor in event.element.constructors) {
+  for (final ctor in event.element.constructors2) {
     // check for ignore annotation
 
     final hasIgnoreAnnotation = ignoreChecker.hasAnnotationOfExact(
@@ -93,29 +91,27 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
 
     final eventName = event.name.replaceAll(RegExp('^_+'), '').toCamelCase();
 
-    Parameter param(ParameterElement p, [bool? isRequired]) {
-      return Parameter(
-        (b) {
-          b
-            ..name = p.name
-            ..named = p.isNamed
-            ..defaultTo =
-                p.defaultValueCode == null ? null : Code(p.defaultValueCode!)
-            ..type = refer(
-              p.type.getDisplayString(),
-            );
+    Parameter param(FormalParameterElement p, [bool? isRequired]) {
+      return Parameter((b) {
+        b
+          ..name = p.name3 ?? ''
+          ..named = p.isNamed
+          ..defaultTo = p.defaultValueCode == null
+              ? null
+              : Code(p.defaultValueCode!)
+          ..type = refer(p.type.getDisplayString());
 
-          if (isRequired != null) {
-            b.required = isRequired;
-          }
-        },
-      );
+        if (isRequired != null) {
+          b.required = isRequired;
+        }
+      });
     }
 
-    var name = switch (ctor.name) {
-      final name when name.isEmpty => eventName,
-      '_' => eventName,
-      _ => ctor.name,
+    var name = switch (ctor.name3) {
+      '_' || 'new' || null => eventName,
+      final String name => name,
+      // ignore: dead_code
+      Object() => eventName,
     };
 
     if (usedNames[name] case final count?) {
@@ -123,40 +119,41 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     }
     usedNames[name] = (usedNames[name] ?? 0) + 1;
 
+    final ctorName = switch (ctor.name3) {
+      '_' || 'new' || null => '',
+      final String name => '.$name',
+    };
+
     final method = Method.returnsVoid(
       (b) => b
         ..name = name
         ..requiredParameters.addAll(
-          ctor.parameters.where((p) => p.isRequiredPositional).map(param),
+          ctor.formalParameters.where((p) => p.isRequiredPositional).map(param),
         )
         ..optionalParameters.addAll(
-          ctor.parameters
+          ctor.formalParameters
               .where((p) => !p.isRequiredPositional)
               .map((p) => param(p, p.isRequiredNamed)),
         )
-        ..body = Block.of(
-          [
-            Block.of([
-              Code('if ('),
-              refer('_bloc').property('isClosed').code,
-              Code(')'),
-              refer('').returned.statement,
-            ]),
-            refer('_bloc').property('add').call([
-              refer('${event.name}${ctor.name == '' ? '' : '.${ctor.name}'}')
-                  .newInstance(
-                      ctor.parameters.where((p) => p.isPositional).map(
-                        (p) {
-                          return refer(p.name);
-                        },
-                      ),
-                      {
-                    for (final p in ctor.parameters.where((p) => p.isNamed))
-                      p.name: refer(p.name),
-                  })
-            ]).statement,
-          ],
-        ),
+        ..body = Block.of([
+          Block.of([
+            Code('if ('),
+            refer('_bloc').property('isClosed').code,
+            Code(')'),
+            refer('').returned.statement,
+          ]),
+          refer('_bloc').property('add').call([
+            refer('${event.name}${ctorName}').newInstance(
+              ctor.formalParameters.where((p) => p.isPositional).map((p) {
+                return refer(p.name3 ?? '');
+              }),
+              {
+                for (final p in ctor.formalParameters.where((p) => p.isNamed))
+                  p.name3 ?? '': refer(p.name3 ?? ''),
+              },
+            ),
+          ]).statement,
+        ]),
     );
 
     methods.add(method);
@@ -166,21 +163,23 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
 }
 
 Extension _writeExtension(BlocElement bloc) {
-  final extension = Extension((b) => b
-    ..name = '\$${bloc.bloc.name}EventsX'
-    ..on = refer(bloc.bloc.name)
-    ..methods.add(
-      Method(
-        (b) => b
-          ..name = 'events'
-          ..returns = refer('_${bloc.bloc.name}Events')
-          ..lambda = true
-          ..type = MethodType.getter
-          ..body = refer('_${bloc.bloc.name}Events').newInstance([
-            refer('this'),
-          ]).code,
+  final extension = Extension(
+    (b) => b
+      ..name = '\$${bloc.bloc.name3}EventsX'
+      ..on = refer(bloc.bloc.name3 ?? '')
+      ..methods.add(
+        Method(
+          (b) => b
+            ..name = 'events'
+            ..returns = refer('_${bloc.bloc.name3}Events')
+            ..lambda = true
+            ..type = MethodType.getter
+            ..body = refer(
+              '_${bloc.bloc.name3}Events',
+            ).newInstance([refer('this')]).code,
+        ),
       ),
-    ));
+  );
 
   return extension;
 }

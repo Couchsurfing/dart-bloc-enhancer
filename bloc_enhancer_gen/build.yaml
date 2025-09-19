@@ -1,21 +1,21 @@
 # targets:
-#     $default:
-#         builders:
-#             json_serializable:
-#                 enabled: true
-#                 generate_for:
-#                     - 'lib/models/*.dart'
-#                 options:
-#                     any_map: true
-#                     explicit_to_json: true
-#                     field_rename: snake
+#   $default:
+#     builders:
+#       json_serializable:
+#         enabled: true
+#         generate_for:
+#           - "lib/models/*.dart"
+#         options:
+#           any_map: true
+#           explicit_to_json: true
+#           field_rename: snake
 
 builders:
-    bloc_enhancer_gen:
-        target: 'bloc_enhancer_gen'
-        import: 'package:bloc_enhancer_gen/bloc_enhancer_gen.dart'
-        builder_factories: ['blocEnhancerGenerator']
-        build_extensions: { '.dart': ['.bloc_enhancer.g.part'] }
-        auto_apply: dependents
-        build_to: cache
-        applies_builders: ['source_gen|combining_builder']
+  bloc_enhancer_gen:
+    target: "bloc_enhancer_gen"
+    import: "package:bloc_enhancer_gen/bloc_enhancer_gen.dart"
+    builder_factories: ["blocEnhancerGenerator"]
+    build_extensions: { ".dart": [".bloc_enhancer.g.part"] }
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

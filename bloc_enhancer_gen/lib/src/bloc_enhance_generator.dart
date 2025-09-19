@@ -1,4 +1,6 @@
 // --- LICENSE ---
+// ignore_for_file: deprecated_member_use
+
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -17,7 +19,7 @@ limitations under the License.
 // --- LICENSE ---
 import 'dart:async' show FutureOr;
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:bloc_enhancer_gen/models/settings.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
@@ -37,25 +39,27 @@ final class BlocEnhancerGenerator extends Generator {
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final visitor = BlocVisitor(settings);
-    library.element.visitChildren(visitor);
+    library.element.visitChildren2(visitor);
 
-    final allClassElements = library.allElements.whereType<ClassElement>();
+    final allClassElements = library.allElements.whereType<ClassElement2>();
 
     for (final bloc in visitor.blocs) {
       final eventAndState = {bloc.event.name, bloc.state.name};
-      final ignore = {bloc.bloc.name, ...eventAndState};
+      final ignore = {bloc.bloc.name3, ...eventAndState};
 
       for (final clazz in allClassElements) {
-        if (ignore.contains(clazz.name)) {
+        if (ignore.contains(clazz.name3)) {
           continue;
         }
 
         // get super types
-        final superTypes = {...clazz.allSupertypes.map((e) => e.element.name)};
+        final superTypes = {
+          ...clazz.allSupertypes.map((e) => e.element3.name3),
+        };
         if (superTypes.contains(bloc.event.name)) {
           bool canAdd = true;
           for (final pattern in settings.avoidEvents) {
-            if (RegExp(pattern).hasMatch(clazz.name)) {
+            if (RegExp(pattern).hasMatch(clazz.name3 ?? '')) {
               canAdd = false;
               break;
             }
@@ -74,10 +78,7 @@ final class BlocEnhancerGenerator extends Generator {
             };
 
             bloc.addEvent(
-              EventElement(
-                element: clazz,
-                createFactory: createFactory,
-              ),
+              EventElement(element: clazz, createFactory: createFactory),
             );
           }
         } else if (superTypes.contains(bloc.state.name)) {
@@ -85,7 +86,7 @@ final class BlocEnhancerGenerator extends Generator {
 
           if (!enhanceChecker.hasAnnotationOfExact(clazz)) {
             for (final pattern in settings.avoidStates) {
-              if (RegExp(pattern).hasMatch(clazz.name)) {
+              if (RegExp(pattern).hasMatch(clazz.name3 ?? '')) {
                 canAdd = false;
                 break;
               }
@@ -105,10 +106,7 @@ final class BlocEnhancerGenerator extends Generator {
             };
 
             bloc.addState(
-              StateElement(
-                element: clazz,
-                createFactory: createFactory,
-              ),
+              StateElement(element: clazz, createFactory: createFactory),
             );
           }
         }

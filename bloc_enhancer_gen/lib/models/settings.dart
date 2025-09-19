@@ -46,10 +46,12 @@ class Settings implements SettingsInterface {
 
     final patterns = <String, List<String>>{};
 
-    settings.avoidEvents
-        .forEach((e) => patterns.putIfAbsent(e, () => []).add('avoid_events'));
-    settings.avoidStates
-        .forEach((e) => patterns.putIfAbsent(e, () => []).add('avoid_states'));
+    settings.avoidEvents.forEach(
+      (e) => patterns.putIfAbsent(e, () => []).add('avoid_events'),
+    );
+    settings.avoidStates.forEach(
+      (e) => patterns.putIfAbsent(e, () => []).add('avoid_states'),
+    );
 
     // make sure that the priorities patterns are valid regex
     for (final MapEntry(key: pattern, value: locations) in patterns.entries) {

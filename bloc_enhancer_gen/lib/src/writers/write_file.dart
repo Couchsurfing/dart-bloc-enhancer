@@ -24,8 +24,5 @@ List<Spec> writeFile(List<BlocElement> blocs) {
   final events = writeEvents(blocs);
   final states = writeStates(blocs);
 
-  return [
-    ...events,
-    ...states,
-  ];
+  return [...events, ...states];
 }

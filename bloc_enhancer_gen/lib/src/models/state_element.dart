@@ -1,4 +1,6 @@
+// ignore_for_file: deprecated_member_use
 // --- LICENSE ---
+
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -15,21 +17,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
 
 class StateElement implements FactoryElement {
-  StateElement({
-    required this.element,
-    required this.createFactory,
-  });
+  StateElement({required this.element, required this.createFactory});
 
   @override
-  final ClassElement element;
+  final ClassElement2 element;
 
   @override
   bool createFactory;
 
   @override
-  String get name => element.name;
+  String get name => element.name3 ?? '';
 }

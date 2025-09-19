@@ -25,10 +25,7 @@ import 'src/bloc_enhance_generator.dart';
 Builder blocEnhancerGenerator(BuilderOptions options) {
   final settings = Settings.fromJson(options.config);
 
-  return SharedPartBuilder(
-    [
-      BlocEnhancerGenerator(settings),
-    ],
-    'bloc_enhancer_gen',
-  );
+  return SharedPartBuilder([
+    BlocEnhancerGenerator(settings),
+  ], 'bloc_enhancer_gen');
 }

@@ -1,4 +1,6 @@
+// ignore_for_file: deprecated_member_use
 // --- LICENSE ---
+
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -15,16 +17,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/dart/element/visitor.dart';
+import 'package:analyzer/dart/element/visitor2.dart';
 import 'package:bloc_enhancer_gen/models/settings.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
 
-class BlocVisitor extends RecursiveElementVisitor<void> {
+class BlocVisitor extends RecursiveElementVisitor2<void> {
   BlocVisitor(this.settings);
 
   final Settings settings;
@@ -32,7 +34,7 @@ class BlocVisitor extends RecursiveElementVisitor<void> {
   final blocs = <BlocElement>[];
 
   @override
-  void visitClassElement(ClassElement element) {
+  void visitClassElement(ClassElement2 element) {
     if (!blocChecker.isAssignableFromType(element.thisType)) {
       return;
     }
@@ -44,7 +46,7 @@ class BlocVisitor extends RecursiveElementVisitor<void> {
     if (!settings.autoEnhance) {
       bool canEnhance = false;
       for (final pattern in settings.enhance) {
-        if (RegExp(pattern).hasMatch(element.name)) {
+        if (RegExp(pattern).hasMatch(element.name3 ?? '')) {
           canEnhance = true;
           break;
         }
@@ -67,41 +69,35 @@ class BlocVisitor extends RecursiveElementVisitor<void> {
       throw Exception('Bloc must have 2 type arguments');
     }
 
-    final [DartType(element: event), DartType(element: state)] = typeArgs;
+    final [DartType(element3: event), DartType(element3: state)] = typeArgs;
 
     if (event == null || state == null) {
       throw Exception('Bloc must have 2 type arguments');
     }
 
-    if (event is! ClassElement || state is! ClassElement) {
+    if (event is! ClassElement2 || state is! ClassElement2) {
       throw Exception('Bloc must have 2 type arguments');
     }
 
     final createStateFactory = switch (settings.createStateFactory) {
       false => createFactoryChecker.hasAnnotationOfExact(
-          state,
-          throwOnUnresolved: false,
-        ),
+        state,
+        throwOnUnresolved: false,
+      ),
       _ => true,
     };
 
     final createEventFactory = switch (settings.createEventFactory) {
       false => createFactoryChecker.hasAnnotationOfExact(
-          event,
-          throwOnUnresolved: false,
-        ),
+        event,
+        throwOnUnresolved: false,
+      ),
       _ => true,
     };
 
     final blocElement = BlocElement(
-      event: EventElement(
-        element: event,
-        createFactory: createEventFactory,
-      ),
-      state: StateElement(
-        element: state,
-        createFactory: createStateFactory,
-      ),
+      event: EventElement(element: event, createFactory: createEventFactory),
+      state: StateElement(element: state, createFactory: createStateFactory),
       bloc: element,
     );
 

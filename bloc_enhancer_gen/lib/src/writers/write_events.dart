@@ -1,6 +1,4 @@
-// ignore_for_file: deprecated_member_use
 // --- LICENSE ---
-
 /**
 Copyright 2025 CouchSurfing International Inc.
 
@@ -17,6 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
+// ignore_for_file: deprecated_member_use
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';

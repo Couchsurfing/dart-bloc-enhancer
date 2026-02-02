@@ -1,6 +1,6 @@
 // --- LICENSE ---
 /**
-Copyright 2025 CouchSurfing International Inc.
+Copyright 2026 CouchSurfing International Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -51,9 +51,7 @@ final class BlocEnhancerGenerator extends Generator {
         }
 
         // get super types
-        final superTypes = {
-          ...clazz.allSupertypes.map((e) => e.element.name),
-        };
+        final superTypes = {...clazz.allSupertypes.map((e) => e.element.name)};
         if (superTypes.contains(bloc.event.name)) {
           bool canAdd = true;
           for (final pattern in settings.avoidEvents) {

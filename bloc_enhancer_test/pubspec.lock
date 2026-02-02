@@ -47,14 +47,14 @@ packages:
       path: "../bloc_enhancer"
       relative: true
     source: path
-    version: "0.6.0"
+    version: "0.7.0"
   bloc_enhancer_gen:
     dependency: "direct dev"
     description:
       path: "../bloc_enhancer_gen"
       relative: true
     source: path
-    version: "0.6.0"
+    version: "0.7.0"
   boolean_selector:
     dependency: transitive
     description:

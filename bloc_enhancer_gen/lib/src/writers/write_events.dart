@@ -1,6 +1,6 @@
 // --- LICENSE ---
 /**
-Copyright 2025 CouchSurfing International Inc.
+Copyright 2026 CouchSurfing International Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ Class _writeEventsClass(BlocElement bloc) {
 List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
 
-    for (final ctor in event.element.constructors) {
+  for (final ctor in event.element.constructors) {
     // check for ignore annotation
 
     final hasIgnoreAnnotation = ignoreChecker.hasAnnotationOfExact(

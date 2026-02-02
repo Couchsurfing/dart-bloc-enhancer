@@ -1,3 +1,9 @@
+# 0.7.0 | 2.2.2026
+
+## Chore
+
+- Update Analyzer dependency
+
 # 0.6.0 | 9.19.2025
 
 ## Chore

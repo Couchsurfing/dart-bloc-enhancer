@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
@@ -71,7 +71,7 @@ class WriteFactory {
     Parameter param(FormalParameterElement p, [bool? isRequired]) {
       return Parameter((b) {
         b
-          ..name = p.name3 ?? ''
+          ..name = p.name ?? ''
           ..named = p.isNamed
           ..defaultTo = p.defaultValueCode == null
               ? null
@@ -92,7 +92,7 @@ class WriteFactory {
       return name.replaceAll(RegExp('^_+'), '');
     }
 
-    for (final ctor in element.element.constructors2) {
+    for (final ctor in element.element.constructors) {
       final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
         ctor,
         throwOnUnresolved: false,
@@ -103,7 +103,7 @@ class WriteFactory {
 
       var ctorName = removePrivate(element.name).toCamelCase();
 
-      if (ctor.name3 case final String name when name.isNotEmpty) {
+      if (ctor.name case final String name when name.isNotEmpty) {
         ctorName = '${removePrivate(element.name)}_${removePrivate(name)}'
             .toCamelCase();
       }
@@ -114,15 +114,15 @@ class WriteFactory {
 
       usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
 
-      final classAccess = switch (ctor.name3) {
-        '_' || 'new' || null => ctor.enclosingElement2.name3 ?? '',
-        final name => '${ctor.enclosingElement2.name3 ?? ''}.${name}',
+      final classAccess = switch (ctor.name) {
+        '_' || 'new' || null => ctor.enclosingElement.name ?? '',
+        final name => '${ctor.enclosingElement.name ?? ''}.${name}',
       };
 
       yield Method(
         (b) => b
           ..name = ctorName
-          ..returns = refer(ctor.enclosingElement2.name3 ?? '')
+          ..returns = refer(ctor.enclosingElement.name ?? '')
           ..lambda = true
           ..requiredParameters.addAll(
             ctor.formalParameters
@@ -136,11 +136,11 @@ class WriteFactory {
           )
           ..body = refer(classAccess).newInstance(
             ctor.formalParameters.where((p) => p.isPositional).map((p) {
-              return refer(p.name3 ?? '');
+              return refer(p.name ?? '');
             }),
             {
               for (final p in ctor.formalParameters.where((p) => p.isNamed))
-                p.name3 ?? '': refer(p.name3 ?? ''),
+                p.name ?? '': refer(p.name ?? ''),
             },
           ).code,
       );

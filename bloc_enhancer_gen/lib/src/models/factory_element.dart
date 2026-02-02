@@ -16,12 +16,12 @@ limitations under the License.
 */
 // --- LICENSE ---
 // ignore_for_file: deprecated_member_use
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 
 abstract interface class FactoryElement {
   const FactoryElement();
 
-  ClassElement2 get element;
+  ClassElement get element;
   bool get createFactory;
   String get name;
 }

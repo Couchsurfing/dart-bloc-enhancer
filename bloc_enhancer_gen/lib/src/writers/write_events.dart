@@ -16,7 +16,7 @@ limitations under the License.
 */
 // --- LICENSE ---
 // ignore_for_file: deprecated_member_use
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
@@ -42,7 +42,7 @@ Class _writeEventsClass(BlocElement bloc) {
 
   final events = Class(
     (b) => b
-      ..name = '_${bloc.bloc.name3}Events'
+      ..name = '_${bloc.bloc.name}Events'
       ..constructors.add(
         Constructor(
           (b) => b
@@ -61,7 +61,7 @@ Class _writeEventsClass(BlocElement bloc) {
           (b) => b
             ..name = '_bloc'
             ..modifier = FieldModifier.final$
-            ..type = refer(bloc.bloc.name3 ?? ''),
+            ..type = refer(bloc.bloc.name ?? ''),
         ),
       )
       ..methods.addAll([
@@ -76,7 +76,7 @@ Class _writeEventsClass(BlocElement bloc) {
 List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
 
-  for (final ctor in event.element.constructors2) {
+    for (final ctor in event.element.constructors) {
     // check for ignore annotation
 
     final hasIgnoreAnnotation = ignoreChecker.hasAnnotationOfExact(
@@ -93,7 +93,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     Parameter param(FormalParameterElement p, [bool? isRequired]) {
       return Parameter((b) {
         b
-          ..name = p.name3 ?? ''
+          ..name = p.name ?? ''
           ..named = p.isNamed
           ..defaultTo = p.defaultValueCode == null
               ? null
@@ -106,7 +106,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
       });
     }
 
-    var name = switch (ctor.name3) {
+    var name = switch (ctor.name) {
       '_' || 'new' || null => eventName,
       final String name => name,
       // ignore: dead_code
@@ -118,7 +118,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     }
     usedNames[name] = (usedNames[name] ?? 0) + 1;
 
-    final ctorName = switch (ctor.name3) {
+    final ctorName = switch (ctor.name) {
       '_' || 'new' || null => '',
       final String name => '.$name',
     };
@@ -144,11 +144,11 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
           refer('_bloc').property('add').call([
             refer('${event.name}${ctorName}').newInstance(
               ctor.formalParameters.where((p) => p.isPositional).map((p) {
-                return refer(p.name3 ?? '');
+                return refer(p.name ?? '');
               }),
               {
                 for (final p in ctor.formalParameters.where((p) => p.isNamed))
-                  p.name3 ?? '': refer(p.name3 ?? ''),
+                  p.name ?? '': refer(p.name ?? ''),
               },
             ),
           ]).statement,
@@ -164,17 +164,17 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
 Extension _writeExtension(BlocElement bloc) {
   final extension = Extension(
     (b) => b
-      ..name = '\$${bloc.bloc.name3}EventsX'
-      ..on = refer(bloc.bloc.name3 ?? '')
+      ..name = '\$${bloc.bloc.name}EventsX'
+      ..on = refer(bloc.bloc.name ?? '')
       ..methods.add(
         Method(
           (b) => b
             ..name = 'events'
-            ..returns = refer('_${bloc.bloc.name3}Events')
+            ..returns = refer('_${bloc.bloc.name}Events')
             ..lambda = true
             ..type = MethodType.getter
             ..body = refer(
-              '_${bloc.bloc.name3}Events',
+              '_${bloc.bloc.name}Events',
             ).newInstance([refer('this')]).code,
         ),
       ),

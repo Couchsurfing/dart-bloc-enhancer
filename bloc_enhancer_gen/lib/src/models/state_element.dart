@@ -16,18 +16,18 @@ limitations under the License.
 */
 // --- LICENSE ---
 // ignore_for_file: deprecated_member_use
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
 
 class StateElement implements FactoryElement {
   StateElement({required this.element, required this.createFactory});
 
   @override
-  final ClassElement2 element;
+  final ClassElement element;
 
   @override
   bool createFactory;
 
   @override
-  String get name => element.name3 ?? '';
+  String get name => element.name ?? '';
 }

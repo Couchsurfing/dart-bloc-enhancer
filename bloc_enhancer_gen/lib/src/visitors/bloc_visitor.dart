@@ -16,7 +16,7 @@ limitations under the License.
 */
 // --- LICENSE ---
 // ignore_for_file: deprecated_member_use
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/visitor2.dart';
 import 'package:bloc_enhancer_gen/models/settings.dart';
@@ -33,7 +33,7 @@ class BlocVisitor extends RecursiveElementVisitor2<void> {
   final blocs = <BlocElement>[];
 
   @override
-  void visitClassElement(ClassElement2 element) {
+  void visitClassElement(ClassElement element) {
     if (!blocChecker.isAssignableFromType(element.thisType)) {
       return;
     }
@@ -45,7 +45,7 @@ class BlocVisitor extends RecursiveElementVisitor2<void> {
     if (!settings.autoEnhance) {
       bool canEnhance = false;
       for (final pattern in settings.enhance) {
-        if (RegExp(pattern).hasMatch(element.name3 ?? '')) {
+        if (RegExp(pattern).hasMatch(element.name ?? '')) {
           canEnhance = true;
           break;
         }
@@ -68,13 +68,13 @@ class BlocVisitor extends RecursiveElementVisitor2<void> {
       throw Exception('Bloc must have 2 type arguments');
     }
 
-    final [DartType(element3: event), DartType(element3: state)] = typeArgs;
+    final [DartType(element: event), DartType(element: state)] = typeArgs;
 
     if (event == null || state == null) {
       throw Exception('Bloc must have 2 type arguments');
     }
 
-    if (event is! ClassElement2 || state is! ClassElement2) {
+    if (event is! ClassElement || state is! ClassElement) {
       throw Exception('Bloc must have 2 type arguments');
     }
 

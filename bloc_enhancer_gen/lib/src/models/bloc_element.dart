@@ -16,7 +16,7 @@ limitations under the License.
 */
 // --- LICENSE ---
 // ignore_for_file: deprecated_member_use
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
 import 'package:bloc_enhancer_gen/src/models/state_element.dart';
@@ -29,7 +29,7 @@ class BlocElement {
 
   final EventElement event;
   final StateElement state;
-  final ClassElement2 bloc;
+  final ClassElement bloc;
 
   void addState(StateElement state) {
     if (_hasIgnore(state.element)) {
@@ -43,15 +43,15 @@ class BlocElement {
     _states.add(state);
   }
 
-  bool _hasIgnore(ClassElement2 element) {
+  bool _hasIgnore(ClassElement element) {
     return _hasAnnotation(element, ignoreChecker);
   }
 
-  bool _hasStateFactory(ClassElement2 element) {
+  bool _hasStateFactory(ClassElement element) {
     return _hasAnnotation(element, createFactoryChecker);
   }
 
-  bool _hasAnnotation(ClassElement2 element, TypeChecker checker) {
+  bool _hasAnnotation(ClassElement element, TypeChecker checker) {
     final hasAnnotation = checker.hasAnnotationOfExact(
       element,
       throwOnUnresolved: false,

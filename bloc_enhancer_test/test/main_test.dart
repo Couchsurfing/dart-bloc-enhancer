@@ -2,6 +2,27 @@ import 'package:_/lib.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('$SealedBloc (sealed intermediate)', () {
+    test('generates isReady/asReady/asIfReady for sealed _Ready', () async {
+      final bloc = SealedBloc();
+      final state = bloc.state;
+
+      // Loading state: isReady is false, asIfReady is null
+      expect(state.isLoading, isTrue);
+      expect(state.isReady, isFalse);
+      expect(state.asIfReady, isNull);
+
+      // Load transitions to Idle (extends _Ready) - asIfReady gives access to shared fields
+      bloc.events.load();
+      await bloc.stream.first;
+
+      final readyState = bloc.state;
+      expect(readyState.isReady, isTrue);
+      expect(readyState.asIfReady, isNotNull);
+      expect(readyState.asIfReady!.data, equals('test'));
+    });
+  });
+
   group('$SimpleBloc', () {
     group('State Typing', () {
       test('has all states', () {

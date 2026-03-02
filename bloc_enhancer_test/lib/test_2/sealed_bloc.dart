@@ -15,5 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-export 'test_1/test_1.dart';
-export 'test_2/test_2.dart';
+import 'package:bloc/bloc.dart';
+
+part 'sealed_bloc.g.dart';
+part 'sealed_event.dart';
+part 'sealed_state.dart';
+
+class SealedBloc extends Bloc<SealedBlocEvent, SealedBlocState> {
+  SealedBloc() : super(const _Loading()) {
+    on<_Load>((event, emit) => emit(const _Idle(data: 'test')));
+    on<_Edit>((event, emit) {
+      final state = this.state;
+      if (state.asIfReady case final ready?) {
+        emit(_Editing(data: ready.data, editingId: event.id));
+      }
+    });
+  }
+}

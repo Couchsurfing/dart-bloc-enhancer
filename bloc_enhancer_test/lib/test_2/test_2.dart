@@ -15,5 +15,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-export 'test_1/test_1.dart';
-export 'test_2/test_2.dart';
+export 'sealed_bloc.dart';

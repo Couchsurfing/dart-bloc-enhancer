@@ -15,5 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-export 'test_1/test_1.dart';
-export 'test_2/test_2.dart';
+part of 'sealed_bloc.dart';
+
+sealed class SealedBlocEvent {
+  const SealedBlocEvent();
+}
+
+final class _Load extends SealedBlocEvent {
+  const _Load();
+}
+
+final class _Edit extends SealedBlocEvent {
+  const _Edit(this.id);
+  final String id;
+}

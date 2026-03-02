@@ -41,7 +41,7 @@ Extension _writeTypingExtension(BlocElement bloc) {
       ..on = refer(bloc.state.name)
       ..methods.addAll([
         for (final state in bloc.states)
-          if (!state.element.isAbstract) ...[
+          if (state.element != bloc.state.element) ...[
             _writeIsStateMethod(state),
             _writeAsStateMethod(state),
             _writeAsIfStateMethod(state),

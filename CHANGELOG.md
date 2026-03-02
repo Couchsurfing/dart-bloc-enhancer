@@ -1,3 +1,10 @@
+# 0.8.0 | 3.2.2026
+
+## Features
+
+- Generate `isX`/`asX`/`asIfX` for sealed intermediate state classes ([#2](https://github.com/Couchsurfing/dart-bloc-enhancer/issues/2))
+- Bump minimum Dart version to 3.0.0
+
 # 0.7.0 | 2.2.2026
 
 ## Chore

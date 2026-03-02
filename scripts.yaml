@@ -31,9 +31,9 @@ analyze: "{$_packages} dart analyze ."
 publish:
   (bail):
   (command):
-    # - "{$build_runner:build:test}"
-    # - sip test --bail --recursive --concurrent
-    # - "{$prep}"
+    - "{$build_runner:build:test}"
+    - sip test --bail --recursive --concurrent
+    - "{$prep}"
     - "{$_packages} dart pub publish"
     - "{$publish:commit}"
     - "{$publish:tag}"

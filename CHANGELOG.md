@@ -1,3 +1,9 @@
+# 0.9.0 | 3.6.2025
+
+## Chore
+
+- Update analyzer constraint to `>=8.0.0 <12.0.0`
+
 # 0.8.0 | 3.2.2026
 
 ## Features

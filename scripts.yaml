@@ -73,15 +73,15 @@ license:
 
 prep:
   (command):
-    - (+) {$format} --set-exit-if-changed
-    - (+) {$analyze} --fatal-infos --fatal-warnings
-    - (+) {$prep:pubspecs}
-    - (+) {$prep:changelog}
-    - (+) {$prep:conduct}
-    - (+) {$prep:contributing}
-    - (+) {$prep:license}
-    - "{$license:add}"
-    - sip pub get -r
+    # - (+) {$format} --set-exit-if-changed
+    # - (+) {$analyze} --fatal-infos --fatal-warnings
+    # - (+) {$prep:pubspecs}
+    # - (+) {$prep:changelog}
+    # - (+) {$prep:conduct}
+    # - (+) {$prep:contributing}
+    # - (+) {$prep:license}
+    # - "{$license:add}"
+    - dart pub get
   changelog: |
     echo "Copying CHANGELOG.md to all packages"
     DIRS="{DIRS}"

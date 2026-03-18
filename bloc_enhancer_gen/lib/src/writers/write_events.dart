@@ -20,6 +20,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
+import 'package:bloc_enhancer_gen/src/writers/type_utils.dart';
 import 'package:bloc_enhancer_gen/src/writers/write_factory.dart';
 import 'package:change_case/change_case.dart';
 import 'package:code_builder/code_builder.dart';
@@ -98,7 +99,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
           ..defaultTo = p.defaultValueCode == null
               ? null
               : Code(p.defaultValueCode!)
-          ..type = refer(p.type.getDisplayString());
+          ..type = typeToReference(p.type);
 
         if (isRequired != null) {
           b.required = isRequired;

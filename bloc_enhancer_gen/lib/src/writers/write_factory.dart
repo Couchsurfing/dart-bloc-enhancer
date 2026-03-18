@@ -17,6 +17,7 @@ limitations under the License.
 // --- LICENSE ---
 import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
+import 'package:bloc_enhancer_gen/src/writers/type_utils.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
 import 'package:change_case/change_case.dart';
@@ -76,7 +77,7 @@ class WriteFactory {
           ..defaultTo = p.defaultValueCode == null
               ? null
               : Code(p.defaultValueCode!)
-          ..type = refer(p.type.getDisplayString());
+          ..type = typeToReference(p.type);
 
         if (isRequired != null) {
           b.required = isRequired;

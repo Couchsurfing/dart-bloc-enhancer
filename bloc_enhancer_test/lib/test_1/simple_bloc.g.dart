@@ -55,6 +55,11 @@ class _SimpleBlocEvents {
     if (_bloc.isClosed) return;
     _bloc.add(_Optional.no(name: name));
   }
+
+  void addTokenFailed({required Object error, required StackTrace stackTrace}) {
+    if (_bloc.isClosed) return;
+    _bloc.add(_AddTokenFailed(error: error, stackTrace: stackTrace));
+  }
 }
 
 extension $SimpleBlocEventsX on SimpleBloc {

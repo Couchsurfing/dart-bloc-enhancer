@@ -45,3 +45,13 @@ class _Optional extends SimpleEvent {
 
   final String? name;
 }
+
+/// Generic event — type param E is substituted with Object in generated code.
+class _AddTokenFailed<E extends Object> extends SimpleEvent {
+  const _AddTokenFailed({required this.error, required this.stackTrace});
+  final E error;
+  final StackTrace stackTrace;
+
+  @override
+  List<Object> get props => [error, stackTrace];
+}

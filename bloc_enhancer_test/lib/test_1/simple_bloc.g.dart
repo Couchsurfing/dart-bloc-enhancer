@@ -77,9 +77,7 @@ extension $SimpleBlocEventsX on SimpleBloc {
   _SimpleBlocEvents get events => _SimpleBlocEvents(this);
 }
 
-/// Creates a new instance of [SimpleEvent] with the given parameters
-///
-/// Intended to be used for **_TESTING_** purposes only.
+/// Intended for **_TESTING_** only — avoid using in production.
 class _$SimpleEventCreator {
   const _$SimpleEventCreator();
 
@@ -101,13 +99,13 @@ class _$SimpleEventCreator {
 
   _Optional optionalNo({String? name = 'no'}) => _Optional.no(name: name);
 
-  _AddTokenFailed addTokenFailed<E extends Object>({
+  _AddTokenFailed<E> addTokenFailed<E extends Object>({
     required E error,
     required StackTrace stackTrace,
   }) =>
       _AddTokenFailed<E>(error: error, stackTrace: stackTrace);
 
-  _MultiGeneric multiGeneric<E extends Object, F extends Object>({
+  _MultiGeneric<E, F> multiGeneric<E extends Object, F extends Object>({
     required E a,
     required F b,
   }) =>

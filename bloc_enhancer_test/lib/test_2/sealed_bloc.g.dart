@@ -26,9 +26,7 @@ extension $SealedBlocEventsX on SealedBloc {
   _SealedBlocEvents get events => _SealedBlocEvents(this);
 }
 
-/// Creates a new instance of [SealedBlocEvent] with the given parameters
-///
-/// Intended to be used for **_TESTING_** purposes only.
+/// Intended for **_TESTING_** only — avoid using in production.
 class _$SealedBlocEventCreator {
   const _$SealedBlocEventCreator();
 

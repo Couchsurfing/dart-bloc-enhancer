@@ -129,11 +129,17 @@ class WriteFactory {
         final name => '${ctor.enclosingElement.name ?? ''}.${name}',
       };
 
+      final returnType = classTypeParams.isEmpty
+          ? refer(ctor.enclosingElement.name ?? '')
+          : TypeReference((b) => b
+              ..symbol = ctor.enclosingElement.name ?? ''
+              ..types.addAll(typeArgs));
+
       yield Method(
         (b) => b
           ..name = ctorName
           ..types.addAll(classTypeParams.map(typeParameterToReference))
-          ..returns = refer(ctor.enclosingElement.name ?? '')
+          ..returns = returnType
           ..lambda = true
           ..requiredParameters.addAll(
             ctor.formalParameters

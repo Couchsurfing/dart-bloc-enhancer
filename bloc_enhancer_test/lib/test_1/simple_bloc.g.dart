@@ -64,10 +64,7 @@ class _SimpleBlocEvents {
     _bloc.add(_AddTokenFailed<E>(error: error, stackTrace: stackTrace));
   }
 
-  void multiGeneric<E extends Object, F extends Object>({
-    required E a,
-    required F b,
-  }) {
+  void multiGeneric<E, F>({required E a, required F b}) {
     if (_bloc.isClosed) return;
     _bloc.add(_MultiGeneric<E, F>(a: a, b: b));
   }
@@ -105,10 +102,7 @@ class _$SimpleEventCreator {
   }) =>
       _AddTokenFailed<E>(error: error, stackTrace: stackTrace);
 
-  _MultiGeneric<E, F> multiGeneric<E extends Object, F extends Object>({
-    required E a,
-    required F b,
-  }) =>
+  _MultiGeneric<E, F> multiGeneric<E, F>({required E a, required F b}) =>
       _MultiGeneric<E, F>(a: a, b: b);
 }
 

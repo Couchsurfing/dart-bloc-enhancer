@@ -41,14 +41,14 @@ Reference typeToReference(
 }
 
 /// Method must declare the type param so it's in scope for parameter types.
+/// Preserves source bounds: unbounded (null/dynamic) stays unbounded.
 Reference typeParameterToReference(TypeParameterElement tp) {
   final bound = tp.bound;
   return TypeReference((b) {
     b.symbol = tp.name ?? '';
     b.bound = switch (bound) {
-      null => refer('Object'),
-      final b when b is DynamicType => refer('Object'),
-      final b => refer(b.getDisplayString()),
+      null || DynamicType() => null,
+      final bound => refer(bound.getDisplayString()),
     };
   });
 }

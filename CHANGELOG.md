@@ -1,3 +1,10 @@
+# 0.9.1 | 3.18.2025
+
+## Fixes
+
+- Support event/state classes with generic type parameters (e.g. `class _AddTokenFailed<E extends Object>`)
+  - Type parameters in constructor args are substituted with their bound (or `Object`) in generated code so the build succeeds
+
 # 0.9.0 | 3.6.2025
 
 ## Chore

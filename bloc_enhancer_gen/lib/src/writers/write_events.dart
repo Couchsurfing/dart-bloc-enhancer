@@ -76,6 +76,11 @@ Class _writeEventsClass(BlocElement bloc) {
 
 List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
+  final classTypeParams = event.element.typeParameters;
+  final inScopeNames = {
+    for (final tp in classTypeParams)
+      if (tp.name case final name? when name.isNotEmpty) name,
+  };
 
   for (final ctor in event.element.constructors) {
     // check for ignore annotation
@@ -96,10 +101,11 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
         b
           ..name = p.name ?? ''
           ..named = p.isNamed
-          ..defaultTo = p.defaultValueCode == null
-              ? null
-              : Code(p.defaultValueCode!)
-          ..type = typeToReference(p.type);
+          ..defaultTo = switch (p.defaultValueCode) {
+              final code? => Code(code),
+              _ => null,
+            }
+          ..type = typeToReference(p.type, inScopeTypeParams: inScopeNames);
 
         if (isRequired != null) {
           b.required = isRequired;
@@ -110,8 +116,6 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     var name = switch (ctor.name) {
       '_' || 'new' || null => eventName,
       final String name => name,
-      // ignore: dead_code
-      Object() => eventName,
     };
 
     if (usedNames[name] case final count?) {
@@ -124,9 +128,16 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
       final String name => '.$name',
     };
 
+    final typeArgs = [
+      for (final tp in classTypeParams) refer(tp.name ?? ''),
+    ];
+
     final method = Method.returnsVoid(
       (b) => b
         ..name = name
+        ..types.addAll(
+          classTypeParams.map(typeParameterToReference),
+        )
         ..requiredParameters.addAll(
           ctor.formalParameters.where((p) => p.isRequiredPositional).map(param),
         )
@@ -144,13 +155,12 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
           ]),
           refer('_bloc').property('add').call([
             refer('${event.name}${ctorName}').newInstance(
-              ctor.formalParameters.where((p) => p.isPositional).map((p) {
-                return refer(p.name ?? '');
-              }),
+              ctor.formalParameters.where((p) => p.isPositional).map((p) => refer(p.name ?? '')),
               {
                 for (final p in ctor.formalParameters.where((p) => p.isNamed))
                   p.name ?? '': refer(p.name ?? ''),
               },
+              typeArgs,
             ),
           ]).statement,
         ]),

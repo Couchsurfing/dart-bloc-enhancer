@@ -17,7 +17,10 @@ limitations under the License.
 // --- LICENSE ---
 part of 'simple_bloc.dart';
 
+@createFactory
 class SimpleEvent extends Equatable {
+  static const create = _$SimpleEventCreator();
+
   const SimpleEvent();
 
   @override
@@ -46,7 +49,7 @@ class _Optional extends SimpleEvent {
   final String? name;
 }
 
-/// Generic event — type param E is substituted with Object in generated code.
+/// Generic event — type param E is propagated to generated method for full type safety.
 class _AddTokenFailed<E extends Object> extends SimpleEvent {
   const _AddTokenFailed({required this.error, required this.stackTrace});
   final E error;
@@ -54,4 +57,14 @@ class _AddTokenFailed<E extends Object> extends SimpleEvent {
 
   @override
   List<Object> get props => [error, stackTrace];
+}
+
+/// Edge case: multiple type parameters.
+class _MultiGeneric<E, F> extends SimpleEvent {
+  const _MultiGeneric({required this.a, required this.b});
+  final E a;
+  final F b;
+
+  @override
+  List<Object> get props => [a as Object, b as Object];
 }

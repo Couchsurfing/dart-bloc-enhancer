@@ -16,6 +16,7 @@ limitations under the License.
 */
 // --- LICENSE ---
 import 'package:bloc/bloc.dart';
+import 'package:bloc_enhancer/bloc_enhancer.dart';
 import 'package:equatable/equatable.dart';
 
 part 'simple_bloc.g.dart';

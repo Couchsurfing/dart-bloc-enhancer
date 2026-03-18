@@ -26,6 +26,17 @@ extension $SealedBlocEventsX on SealedBloc {
   _SealedBlocEvents get events => _SealedBlocEvents(this);
 }
 
+/// Creates a new instance of [SealedBlocEvent] with the given parameters
+///
+/// Intended to be used for **_TESTING_** purposes only.
+class _$SealedBlocEventCreator {
+  const _$SealedBlocEventCreator();
+
+  _Load load() => _Load();
+
+  _Edit edit(String id) => _Edit(id);
+}
+
 extension $SealedBlocStateTypingX on SealedBlocState {
   bool get isLoading => this is _Loading;
 

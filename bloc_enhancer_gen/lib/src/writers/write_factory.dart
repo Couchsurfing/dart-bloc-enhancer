@@ -17,9 +17,9 @@ limitations under the License.
 // --- LICENSE ---
 import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
-import 'package:bloc_enhancer_gen/src/writers/type_utils.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
+import 'package:bloc_enhancer_gen/src/writers/type_utils.dart';
 import 'package:change_case/change_case.dart';
 import 'package:code_builder/code_builder.dart';
 
@@ -69,15 +69,22 @@ class WriteFactory {
     FactoryElement element,
     Map<String, int> usedNames,
   ) sync* {
+    final classTypeParams = element.element.typeParameters;
+    final inScopeNames = {
+      for (final tp in classTypeParams)
+        if (tp.name case final name? when name.isNotEmpty) name,
+    };
+
     Parameter param(FormalParameterElement p, [bool? isRequired]) {
       return Parameter((b) {
         b
           ..name = p.name ?? ''
           ..named = p.isNamed
-          ..defaultTo = p.defaultValueCode == null
-              ? null
-              : Code(p.defaultValueCode!)
-          ..type = typeToReference(p.type);
+          ..defaultTo = switch (p.defaultValueCode) {
+              final code? => Code(code),
+              _ => null,
+            }
+          ..type = typeToReference(p.type, inScopeTypeParams: inScopeNames);
 
         if (isRequired != null) {
           b.required = isRequired;
@@ -92,6 +99,10 @@ class WriteFactory {
 
       return name.replaceAll(RegExp('^_+'), '');
     }
+
+    final typeArgs = [
+      for (final tp in classTypeParams) refer(tp.name ?? ''),
+    ];
 
     for (final ctor in element.element.constructors) {
       final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
@@ -123,6 +134,7 @@ class WriteFactory {
       yield Method(
         (b) => b
           ..name = ctorName
+          ..types.addAll(classTypeParams.map(typeParameterToReference))
           ..returns = refer(ctor.enclosingElement.name ?? '')
           ..lambda = true
           ..requiredParameters.addAll(
@@ -136,13 +148,12 @@ class WriteFactory {
                 .map((p) => param(p, p.isRequiredNamed)),
           )
           ..body = refer(classAccess).newInstance(
-            ctor.formalParameters.where((p) => p.isPositional).map((p) {
-              return refer(p.name ?? '');
-            }),
+            ctor.formalParameters.where((p) => p.isPositional).map((p) => refer(p.name ?? '')),
             {
               for (final p in ctor.formalParameters.where((p) => p.isNamed))
                 p.name ?? '': refer(p.name ?? ''),
             },
+            typeArgs,
           ).code,
       );
     }

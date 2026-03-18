@@ -16,16 +16,23 @@ limitations under the License.
 */
 // --- LICENSE ---
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 
-/// Returns a [Reference] for use in generated code.
+/// Returns a [Reference] for a parameter type in generated code.
 ///
-/// When [type] is a [TypeParameterType] (e.g. `E` from `class Foo<E>`),
-/// the type parameter is not in scope in the generated file. We substitute
-/// its bound (or `Object` if the bound is dynamic) so the generated code compiles.
-Reference typeToReference(DartType type) {
+/// When [type] is a [TypeParameterType] and [inScopeTypeParams] contains its
+/// name, the type param will be in scope (method declares it) — use [refer].
+/// Otherwise substitute with the bound (or `Object` if dynamic).
+Reference typeToReference(
+  DartType type, {
+  Set<String> inScopeTypeParams = const {},
+}) {
   if (type is TypeParameterType) {
+    if (type.element.name case final name? when inScopeTypeParams.contains(name)) {
+      return refer(name);
+    }
     final bound = type.bound;
     if (bound is DynamicType) {
       return refer('Object');
@@ -33,4 +40,17 @@ Reference typeToReference(DartType type) {
     return refer(bound.getDisplayString());
   }
   return refer(type.getDisplayString());
+}
+
+/// Builds a [TypeReference] for a type parameter (for method/class type params).
+Reference typeParameterToReference(TypeParameterElement tp) {
+  final bound = tp.bound;
+  return TypeReference((b) {
+    b.symbol = tp.name ?? '';
+    b.bound = switch (bound) {
+      null => refer('Object'),
+      final b when b is DynamicType => refer('Object'),
+      final b => refer(b.getDisplayString()),
+    };
+  });
 }

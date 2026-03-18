@@ -48,5 +48,19 @@ void main() {
 
       expect(bloc.events.init, returnsNormally);
     });
+
+    test('supports generic event classes (type params substituted with bound)',
+        () async {
+      final bloc = SimpleBloc();
+      final stackTrace = StackTrace.current;
+
+      expect(
+        () => bloc.events.addTokenFailed(
+          error: Exception('test'),
+          stackTrace: stackTrace,
+        ),
+        returnsNormally,
+      );
+    });
   });
 }

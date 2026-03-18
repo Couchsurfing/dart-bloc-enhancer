@@ -49,7 +49,7 @@ class _Optional extends SimpleEvent {
   final String? name;
 }
 
-/// Generic event — type param E is propagated to generated method for full type safety.
+/// Preserves error type at call site (e.g. bloc.events.addTokenFailed<MyException>(...)).
 class _AddTokenFailed<E extends Object> extends SimpleEvent {
   const _AddTokenFailed({required this.error, required this.stackTrace});
   final E error;
@@ -59,7 +59,7 @@ class _AddTokenFailed<E extends Object> extends SimpleEvent {
   List<Object> get props => [error, stackTrace];
 }
 
-/// Edge case: multiple type parameters.
+/// Covers multiple type params in generated methods.
 class _MultiGeneric<E, F> extends SimpleEvent {
   const _MultiGeneric({required this.a, required this.b});
   final E a;

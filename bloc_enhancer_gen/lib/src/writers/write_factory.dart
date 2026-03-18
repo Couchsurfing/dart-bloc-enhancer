@@ -45,9 +45,7 @@ class WriteFactory {
   Class _writeCreatorClass() {
     final docs =
         '''
-  /// Creates a new instance of [${baseFactory.name}] with the given parameters
-  ///
-  /// Intended to be used for **_TESTING_** purposes only.''';
+  /// Intended for **_TESTING_** only — avoid using in production.''';
 
     final usedNames = <String, int>{};
 

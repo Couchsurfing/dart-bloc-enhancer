@@ -20,11 +20,9 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 
-/// Returns a [Reference] for a parameter type in generated code.
-///
-/// When [type] is a [TypeParameterType] and [inScopeTypeParams] contains its
-/// name, the type param will be in scope (method declares it) — use [refer].
-/// Otherwise substitute with the bound (or `Object` if dynamic).
+/// Raw [refer(type)] fails for type params — e.g. `E` is not in scope in the
+/// generated `.g.dart` file. If we propagate the type param to the method
+/// ([inScopeTypeParams]), use it; otherwise substitute the bound.
 Reference typeToReference(
   DartType type, {
   Set<String> inScopeTypeParams = const {},
@@ -42,7 +40,7 @@ Reference typeToReference(
   return refer(type.getDisplayString());
 }
 
-/// Builds a [TypeReference] for a type parameter (for method/class type params).
+/// Method must declare the type param so it's in scope for parameter types.
 Reference typeParameterToReference(TypeParameterElement tp) {
   final bound = tp.bound;
   return TypeReference((b) {

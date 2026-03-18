@@ -83,8 +83,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   };
 
   for (final ctor in event.element.constructors) {
-    // check for ignore annotation
-
+    // Skip constructors the user explicitly opted out of.
     final hasIgnoreAnnotation = ignoreChecker.hasAnnotationOfExact(
       ctor,
       throwOnUnresolved: false,

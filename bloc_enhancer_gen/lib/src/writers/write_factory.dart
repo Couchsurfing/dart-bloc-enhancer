@@ -126,15 +126,16 @@ class WriteFactory {
 
       usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
 
-      final classAccess = switch (ctor.name) {
-        '_' || 'new' || null => ctor.enclosingElement.name ?? '',
-        final name => '${ctor.enclosingElement.name ?? ''}.${name}',
+      final className = ctor.enclosingElement.name ?? '';
+      final namedConstructorName = switch (ctor.name) {
+        '_' || 'new' || null => null,
+        final String n => n,
       };
 
       final returnType = classTypeParams.isEmpty
-          ? refer(ctor.enclosingElement.name ?? '')
+          ? refer(className)
           : TypeReference((b) => b
-              ..symbol = ctor.enclosingElement.name ?? ''
+              ..symbol = className
               ..types.addAll(typeArgs));
 
       yield Method(
@@ -153,13 +154,17 @@ class WriteFactory {
                 .where((p) => !p.isRequiredPositional)
                 .map((p) => param(p, p.isRequiredNamed)),
           )
-          ..body = refer(classAccess).newInstance(
-            ctor.formalParameters.where((p) => p.isPositional).map((p) => refer(p.name ?? '')),
-            {
+          ..body = genericConstructorInvocation(
+            className: className,
+            namedConstructorName: namedConstructorName,
+            positionalArguments: ctor.formalParameters
+                .where((p) => p.isPositional)
+                .map((p) => refer(p.name ?? '')),
+            namedArguments: {
               for (final p in ctor.formalParameters.where((p) => p.isNamed))
                 p.name ?? '': refer(p.name ?? ''),
             },
-            typeArgs,
+            typeArguments: typeArgs,
           ).code,
       );
     }

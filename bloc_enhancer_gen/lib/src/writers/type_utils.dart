@@ -20,6 +20,43 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 
+/// Dart requires `Class<T>.named()`, not `Class.named<T>()`. [newInstance] on a
+/// dotted [refer] puts type args in the wrong place.
+Expression genericConstructorInvocation({
+  required String className,
+  required String? namedConstructorName,
+  required Iterable<Expression> positionalArguments,
+  required Map<String, Expression> namedArguments,
+  required List<Reference> typeArguments,
+}) {
+  if (typeArguments.isEmpty) {
+    final access = namedConstructorName == null || namedConstructorName.isEmpty
+        ? className
+        : '$className.$namedConstructorName';
+    return refer(access).newInstance(
+      positionalArguments,
+      namedArguments,
+      const [],
+    );
+  }
+  final target = TypeReference((b) => b
+    ..symbol = className
+    ..types.addAll(typeArguments));
+  if (namedConstructorName == null || namedConstructorName.isEmpty) {
+    return target.newInstance(
+      positionalArguments,
+      namedArguments,
+      const [],
+    );
+  }
+  return target.newInstanceNamed(
+    namedConstructorName,
+    positionalArguments,
+    namedArguments,
+    const [],
+  );
+}
+
 /// Raw [refer(type)] fails for type params — e.g. `E` is not in scope in the
 /// generated `.g.dart` file. If we propagate the type param to the method
 /// ([inScopeTypeParams]), use it; otherwise substitute the bound.

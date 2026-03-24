@@ -122,14 +122,14 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     }
     usedNames[name] = (usedNames[name] ?? 0) + 1;
 
-    final ctorName = switch (ctor.name) {
-      '_' || 'new' || null => '',
-      final String name => '.$name',
-    };
-
     final typeArgs = [
       for (final tp in classTypeParams) refer(tp.name ?? ''),
     ];
+
+    final namedConstructorName = switch (ctor.name) {
+      '_' || 'new' || null => null,
+      final String n => n,
+    };
 
     final method = Method.returnsVoid(
       (b) => b
@@ -153,13 +153,17 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
             refer('').returned.statement,
           ]),
           refer('_bloc').property('add').call([
-            refer('${event.name}${ctorName}').newInstance(
-              ctor.formalParameters.where((p) => p.isPositional).map((p) => refer(p.name ?? '')),
-              {
+            genericConstructorInvocation(
+              className: event.name,
+              namedConstructorName: namedConstructorName,
+              positionalArguments: ctor.formalParameters
+                  .where((p) => p.isPositional)
+                  .map((p) => refer(p.name ?? '')),
+              namedArguments: {
                 for (final p in ctor.formalParameters.where((p) => p.isNamed))
                   p.name ?? '': refer(p.name ?? ''),
               },
-              typeArgs,
+              typeArguments: typeArgs,
             ),
           ]).statement,
         ]),

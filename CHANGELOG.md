@@ -4,6 +4,7 @@
 
 - Support event/state classes with generic type parameters (e.g. `class _AddTokenFailed<E extends Object>`)
   - Type parameters are propagated to generated methods and constructor calls for full type safety at the call site
+  - Thank you for your contribution [@SupposedlySam](https://github.com/SupposedlySam)!
 
 # 0.9.0 | 3.6.2025
 

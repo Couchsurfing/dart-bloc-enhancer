@@ -1,3 +1,10 @@
+# 0.9.1 | 3.18.2026
+
+## Features
+
+- Support event/state classes with generic type parameters (e.g. `class _AddTokenFailed<E extends Object>`)
+  - Type parameters are propagated to generated methods and constructor calls for full type safety at the call site
+
 # 0.9.0 | 3.6.2025
 
 ## Chore

@@ -20,6 +20,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/event_element.dart';
+import 'package:bloc_enhancer_gen/src/writers/type_utils.dart';
 import 'package:bloc_enhancer_gen/src/writers/write_factory.dart';
 import 'package:change_case/change_case.dart';
 import 'package:code_builder/code_builder.dart';
@@ -75,10 +76,14 @@ Class _writeEventsClass(BlocElement bloc) {
 
 List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
   final methods = <Method>[];
+  final classTypeParams = event.element.typeParameters;
+  final inScopeNames = {
+    for (final tp in classTypeParams)
+      if (tp.name case final name? when name.isNotEmpty) name,
+  };
 
   for (final ctor in event.element.constructors) {
-    // check for ignore annotation
-
+    // Skip constructors the user explicitly opted out of.
     final hasIgnoreAnnotation = ignoreChecker.hasAnnotationOfExact(
       ctor,
       throwOnUnresolved: false,
@@ -95,10 +100,11 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
         b
           ..name = p.name ?? ''
           ..named = p.isNamed
-          ..defaultTo = p.defaultValueCode == null
-              ? null
-              : Code(p.defaultValueCode!)
-          ..type = refer(p.type.getDisplayString());
+          ..defaultTo = switch (p.defaultValueCode) {
+              final code? => Code(code),
+              _ => null,
+            }
+          ..type = typeToReference(p.type, inScopeTypeParams: inScopeNames);
 
         if (isRequired != null) {
           b.required = isRequired;
@@ -109,8 +115,6 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     var name = switch (ctor.name) {
       '_' || 'new' || null => eventName,
       final String name => name,
-      // ignore: dead_code
-      Object() => eventName,
     };
 
     if (usedNames[name] case final count?) {
@@ -118,14 +122,21 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     }
     usedNames[name] = (usedNames[name] ?? 0) + 1;
 
-    final ctorName = switch (ctor.name) {
-      '_' || 'new' || null => '',
-      final String name => '.$name',
+    final typeArgs = [
+      for (final tp in classTypeParams) refer(tp.name ?? ''),
+    ];
+
+    final namedConstructorName = switch (ctor.name) {
+      '_' || 'new' || null => null,
+      final String n => n,
     };
 
     final method = Method.returnsVoid(
       (b) => b
         ..name = name
+        ..types.addAll(
+          classTypeParams.map(typeParameterToReference),
+        )
         ..requiredParameters.addAll(
           ctor.formalParameters.where((p) => p.isRequiredPositional).map(param),
         )
@@ -142,14 +153,17 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
             refer('').returned.statement,
           ]),
           refer('_bloc').property('add').call([
-            refer('${event.name}${ctorName}').newInstance(
-              ctor.formalParameters.where((p) => p.isPositional).map((p) {
-                return refer(p.name ?? '');
-              }),
-              {
+            genericConstructorInvocation(
+              className: event.name,
+              namedConstructorName: namedConstructorName,
+              positionalArguments: ctor.formalParameters
+                  .where((p) => p.isPositional)
+                  .map((p) => refer(p.name ?? '')),
+              namedArguments: {
                 for (final p in ctor.formalParameters.where((p) => p.isNamed))
                   p.name ?? '': refer(p.name ?? ''),
               },
+              typeArguments: typeArgs,
             ),
           ]).statement,
         ]),

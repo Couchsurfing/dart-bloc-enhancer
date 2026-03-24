@@ -48,5 +48,52 @@ void main() {
 
       expect(bloc.events.init, returnsNormally);
     });
+
+    test('supports generic event classes with full type parameter propagation',
+        () async {
+      final bloc = SimpleBloc();
+      final stackTrace = StackTrace.current;
+
+      expect(
+        () => bloc.events.addTokenFailed(
+          error: Exception('test'),
+          stackTrace: stackTrace,
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('factory creator supports generic event classes', () {
+      final st = StackTrace.current;
+      final event = SimpleEvent.create.addTokenFailed<String>(
+        error: 'err',
+        stackTrace: st,
+      );
+      expect(event, isA<SimpleEvent>());
+      final bloc = SimpleBloc();
+      bloc.add(event);
+    });
+
+    test('supports multiple type parameters on generic events', () {
+      final bloc = SimpleBloc();
+      expect(
+        () => bloc.events.multiGeneric(a: 1, b: 'two'),
+        returnsNormally,
+      );
+    });
+
+    test(
+      'generic class with named constructor uses Class<T>.ctor in generated code',
+      () {
+        final bloc = SimpleBloc();
+        expect(
+          () => bloc.events.foo<String>(),
+          returnsNormally,
+        );
+        final event = SimpleEvent.create.genericNamedFoo<String>();
+        expect(event, isA<SimpleEvent>());
+        bloc.add(event);
+      },
+    );
   });
 }

@@ -5,3 +5,4 @@ targets:
                 enabled: true
                 options:
                     auto_enhance: true
+                    create_event_factory: true

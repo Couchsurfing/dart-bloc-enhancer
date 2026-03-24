@@ -19,6 +19,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:bloc_enhancer_gen/src/checkers/bloc_enhancer_checkers.dart';
 import 'package:bloc_enhancer_gen/src/models/bloc_element.dart';
 import 'package:bloc_enhancer_gen/src/models/factory_element.dart';
+import 'package:bloc_enhancer_gen/src/writers/type_utils.dart';
 import 'package:change_case/change_case.dart';
 import 'package:code_builder/code_builder.dart';
 
@@ -68,15 +69,22 @@ class WriteFactory {
     FactoryElement element,
     Map<String, int> usedNames,
   ) sync* {
+    final classTypeParams = element.element.typeParameters;
+    final inScopeNames = {
+      for (final tp in classTypeParams)
+        if (tp.name case final name? when name.isNotEmpty) name,
+    };
+
     Parameter param(FormalParameterElement p, [bool? isRequired]) {
       return Parameter((b) {
         b
           ..name = p.name ?? ''
           ..named = p.isNamed
-          ..defaultTo = p.defaultValueCode == null
-              ? null
-              : Code(p.defaultValueCode!)
-          ..type = refer(p.type.getDisplayString());
+          ..defaultTo = switch (p.defaultValueCode) {
+              final code? => Code(code),
+              _ => null,
+            }
+          ..type = typeToReference(p.type, inScopeTypeParams: inScopeNames);
 
         if (isRequired != null) {
           b.required = isRequired;
@@ -91,6 +99,10 @@ class WriteFactory {
 
       return name.replaceAll(RegExp('^_+'), '');
     }
+
+    final typeArgs = [
+      for (final tp in classTypeParams) refer(tp.name ?? ''),
+    ];
 
     for (final ctor in element.element.constructors) {
       final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
@@ -114,15 +126,23 @@ class WriteFactory {
 
       usedNames[ctorName] = (usedNames[ctorName] ?? 0) + 1;
 
-      final classAccess = switch (ctor.name) {
-        '_' || 'new' || null => ctor.enclosingElement.name ?? '',
-        final name => '${ctor.enclosingElement.name ?? ''}.${name}',
+      final className = ctor.enclosingElement.name ?? '';
+      final namedConstructorName = switch (ctor.name) {
+        '_' || 'new' || null => null,
+        final String n => n,
       };
+
+      final returnType = classTypeParams.isEmpty
+          ? refer(className)
+          : TypeReference((b) => b
+              ..symbol = className
+              ..types.addAll(typeArgs));
 
       yield Method(
         (b) => b
           ..name = ctorName
-          ..returns = refer(ctor.enclosingElement.name ?? '')
+          ..types.addAll(classTypeParams.map(typeParameterToReference))
+          ..returns = returnType
           ..lambda = true
           ..requiredParameters.addAll(
             ctor.formalParameters
@@ -134,14 +154,17 @@ class WriteFactory {
                 .where((p) => !p.isRequiredPositional)
                 .map((p) => param(p, p.isRequiredNamed)),
           )
-          ..body = refer(classAccess).newInstance(
-            ctor.formalParameters.where((p) => p.isPositional).map((p) {
-              return refer(p.name ?? '');
-            }),
-            {
+          ..body = genericConstructorInvocation(
+            className: className,
+            namedConstructorName: namedConstructorName,
+            positionalArguments: ctor.formalParameters
+                .where((p) => p.isPositional)
+                .map((p) => refer(p.name ?? '')),
+            namedArguments: {
               for (final p in ctor.formalParameters.where((p) => p.isNamed))
                 p.name ?? '': refer(p.name ?? ''),
             },
+            typeArguments: typeArgs,
           ).code,
       );
     }

@@ -55,10 +55,64 @@ class _SimpleBlocEvents {
     if (_bloc.isClosed) return;
     _bloc.add(_Optional.no(name: name));
   }
+
+  void addTokenFailed<E extends Object>({
+    required E error,
+    required StackTrace stackTrace,
+  }) {
+    if (_bloc.isClosed) return;
+    _bloc.add(_AddTokenFailed<E>(error: error, stackTrace: stackTrace));
+  }
+
+  void multiGeneric<E, F>({required E a, required F b}) {
+    if (_bloc.isClosed) return;
+    _bloc.add(_MultiGeneric<E, F>(a: a, b: b));
+  }
+
+  void foo<T>() {
+    if (_bloc.isClosed) return;
+    _bloc.add(_GenericNamed<T>.foo());
+  }
 }
 
 extension $SimpleBlocEventsX on SimpleBloc {
   _SimpleBlocEvents get events => _SimpleBlocEvents(this);
+}
+
+/// Creates a new instance of [SimpleEvent] with the given parameters
+///
+/// Intended to be used for **_TESTING_** purposes only.
+class _$SimpleEventCreator {
+  const _$SimpleEventCreator();
+
+  _Init init() => _Init();
+
+  _Create create(String name) => _Create(name);
+
+  _Create createPersonal() => _Create.personal();
+
+  _Create createOther({required String name}) => _Create.other(name: name);
+
+  _Create createDude([String name = 'sup']) => _Create.dude(name);
+
+  _Optional optional([String? name]) => _Optional(name);
+
+  _Optional optionalReq(String name) => _Optional.req(name);
+
+  _Optional optionalOp(String? name) => _Optional.op(name);
+
+  _Optional optionalNo({String? name = 'no'}) => _Optional.no(name: name);
+
+  _AddTokenFailed<E> addTokenFailed<E extends Object>({
+    required E error,
+    required StackTrace stackTrace,
+  }) =>
+      _AddTokenFailed<E>(error: error, stackTrace: stackTrace);
+
+  _MultiGeneric<E, F> multiGeneric<E, F>({required E a, required F b}) =>
+      _MultiGeneric<E, F>(a: a, b: b);
+
+  _GenericNamed<T> genericNamedFoo<T>() => _GenericNamed<T>.foo();
 }
 
 extension $SimpleStateTypingX on SimpleState {

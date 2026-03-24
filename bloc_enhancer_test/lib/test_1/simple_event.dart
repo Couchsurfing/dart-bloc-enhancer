@@ -68,3 +68,8 @@ class _MultiGeneric<E, F> extends SimpleEvent {
   @override
   List<Object> get props => [a as Object, b as Object];
 }
+
+/// Generic + named ctor: Dart requires `Class<T>.named()`, not `Class.named<T>()`.
+class _GenericNamed<T> extends SimpleEvent {
+  const _GenericNamed.foo();
+}

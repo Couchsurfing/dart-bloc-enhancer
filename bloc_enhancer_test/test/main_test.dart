@@ -81,5 +81,19 @@ void main() {
         returnsNormally,
       );
     });
+
+    test(
+      'generic class with named constructor uses Class<T>.ctor in generated code',
+      () {
+        final bloc = SimpleBloc();
+        expect(
+          () => bloc.events.foo<String>(),
+          returnsNormally,
+        );
+        final event = SimpleEvent.create.genericNamedFoo<String>();
+        expect(event, isA<SimpleEvent>());
+        bloc.add(event);
+      },
+    );
   });
 }

@@ -68,13 +68,20 @@ class _SimpleBlocEvents {
     if (_bloc.isClosed) return;
     _bloc.add(_MultiGeneric<E, F>(a: a, b: b));
   }
+
+  void foo<T>() {
+    if (_bloc.isClosed) return;
+    _bloc.add(_GenericNamed<T>.foo());
+  }
 }
 
 extension $SimpleBlocEventsX on SimpleBloc {
   _SimpleBlocEvents get events => _SimpleBlocEvents(this);
 }
 
-/// Intended for **_TESTING_** only — avoid using in production.
+/// Creates a new instance of [SimpleEvent] with the given parameters
+///
+/// Intended to be used for **_TESTING_** purposes only.
 class _$SimpleEventCreator {
   const _$SimpleEventCreator();
 
@@ -104,6 +111,8 @@ class _$SimpleEventCreator {
 
   _MultiGeneric<E, F> multiGeneric<E, F>({required E a, required F b}) =>
       _MultiGeneric<E, F>(a: a, b: b);
+
+  _GenericNamed<T> genericNamedFoo<T>() => _GenericNamed<T>.foo();
 }
 
 extension $SimpleStateTypingX on SimpleState {

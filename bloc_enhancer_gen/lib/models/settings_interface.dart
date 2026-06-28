@@ -38,7 +38,7 @@ abstract interface class SettingsInterface {
   /// This is useful for when you want to access (private) states during tests.
   bool get createStateFactory;
 
-  /// Whether to create a class where all states can be accessed statically.
+  /// Whether to create a class where all events can be accessed statically.
   ///
   /// This is useful for when you want to access (private) states during tests.
   bool get createEventFactory;
